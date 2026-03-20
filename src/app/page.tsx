@@ -11,6 +11,15 @@ import {
   Users,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 const featuredArticles = [
   {
     title: "怎么设计一篇会让人愿意读完的长文？",
@@ -94,19 +103,15 @@ export default function Home() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#featured"
-                className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
-              >
-                查看示例内容
-                <ArrowRight className="h-4 w-4" />
-              </a>
-              <a
-                href="#topics"
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-              >
-                浏览讨论主题
-              </a>
+              <Button asChild className="rounded-2xl px-5 shadow-lg shadow-slate-300">
+                <a href="#featured">
+                  查看示例内容
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="rounded-2xl px-5">
+                <a href="#topics">浏览讨论主题</a>
+              </Button>
             </div>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -163,6 +168,34 @@ export default function Home() {
             </div>
           </aside>
         </div>
+
+        <section className="mt-8 grid gap-5 lg:grid-cols-2">
+          <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-200/70">
+            <CardHeader>
+              <CardTitle className="text-lg">shadcn/ui 已接入</CardTitle>
+              <CardDescription>
+                现在项目里已经可以直接使用 Button、Card，并继续通过 shadcn add 扩展更多组件。
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-3">
+              <Button>默认按钮</Button>
+              <Button variant="secondary">次级按钮</Button>
+              <Button variant="outline">描边按钮</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-200/70">
+            <CardHeader>
+              <CardTitle className="text-lg">后续可直接加组件</CardTitle>
+              <CardDescription>
+                比如 dialog、dropdown-menu、sheet、tabs、form、toast。
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm leading-6 text-slate-600">
+              命令示例：<code className="rounded bg-slate-100 px-2 py-1 text-slate-800">pnpm dlx shadcn@latest add dialog</code>
+            </CardContent>
+          </Card>
+        </section>
 
         <section id="featured" className="mt-8">
           <div className="mb-5 flex items-center justify-between">
