@@ -1,47 +1,28 @@
 import { defineConfig, presetWind4 } from "unocss";
+import presetAnimations from "unocss-preset-animations";
+import { presetShadcn } from "unocss-preset-shadcn";
+
+const animationsPreset = presetAnimations() as unknown as ReturnType<typeof presetWind4>;
+const shadcnPreset = presetShadcn(
+  {
+    color: "neutral",
+    darkSelector: ".dark",
+  },
+  {
+    globals: false,
+    componentLibrary: "radix",
+  }
+) as unknown as ReturnType<typeof presetWind4>;
 
 export default defineConfig({
-  presets: [presetWind4()],
-  theme: {
-    colors: {
-      background: "hsl(var(--background))",
-      foreground: "hsl(var(--foreground))",
-      card: {
-        DEFAULT: "hsl(var(--card))",
-        foreground: "hsl(var(--card-foreground))",
-      },
-      popover: {
-        DEFAULT: "hsl(var(--popover))",
-        foreground: "hsl(var(--popover-foreground))",
-      },
-      primary: {
-        DEFAULT: "hsl(var(--primary))",
-        foreground: "hsl(var(--primary-foreground))",
-      },
-      secondary: {
-        DEFAULT: "hsl(var(--secondary))",
-        foreground: "hsl(var(--secondary-foreground))",
-      },
-      muted: {
-        DEFAULT: "hsl(var(--muted))",
-        foreground: "hsl(var(--muted-foreground))",
-      },
-      accent: {
-        DEFAULT: "hsl(var(--accent))",
-        foreground: "hsl(var(--accent-foreground))",
-      },
-      destructive: {
-        DEFAULT: "hsl(var(--destructive))",
-        foreground: "hsl(var(--destructive-foreground))",
-      },
-      border: "hsl(var(--border))",
-      input: "hsl(var(--input))",
-      ring: "hsl(var(--ring))",
-    },
-  },
+  presets: [presetWind4(), animationsPreset, shadcnPreset],
   content: {
     pipeline: {
-      include: ["src/**/*.{ts,tsx,js,jsx,mdx}", "components/**/*.{ts,tsx,js,jsx,mdx}"],
+      include: [
+        /\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/,
+        "src/**/*.{js,jsx,ts,tsx,mdx}",
+        "components/**/*.{js,jsx,ts,tsx,mdx}",
+      ],
     },
   },
 });

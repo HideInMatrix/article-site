@@ -1,3 +1,4 @@
+@import "@unocss/reset/tailwind.css";
 @unocss;
 
 :root {
@@ -50,7 +51,6 @@
 
 * {
   box-sizing: border-box;
-  border-color: hsl(var(--border));
 }
 
 html {
