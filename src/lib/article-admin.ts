@@ -129,6 +129,42 @@ export async function createArticleRecord(articleInput: NormalizedArticleInput) 
   });
 }
 
+export async function upsertArticleRecordBySlug(articleInput: NormalizedArticleInput) {
+  assertArticleInput(articleInput);
+
+  const existing = await prisma.article.findUnique({
+    where: { slug: articleInput.slug },
+    select: { id: true, slug: true },
+  });
+
+  if (!existing) {
+    const article = await createArticleRecord(articleInput);
+    return { article, created: true, previousSlug: null };
+  }
+
+  const article = await prisma.article.update({
+    where: { id: existing.id },
+    data: {
+      title: articleInput.title,
+      slug: articleInput.slug,
+      excerpt: articleInput.excerpt,
+      content: articleInput.content,
+      category: articleInput.category,
+      authorName: articleInput.authorName,
+      readTimeMinutes: articleInput.readTimeMinutes,
+      publishedAt: articleInput.publishedAt,
+      tags: {
+        deleteMany: {},
+        create: await connectOrCreateTags(articleInput.tags),
+      },
+    },
+  });
+
+  await cleanupUnusedTags();
+
+  return { article, created: false, previousSlug: existing.slug };
+}
+
 export async function updateArticleRecord(articleId: string, articleInput: NormalizedArticleInput) {
   assertArticleInput(articleInput);
 

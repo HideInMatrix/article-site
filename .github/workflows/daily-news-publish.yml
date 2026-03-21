@@ -1,0 +1,44 @@
+name: Publish daily news digests
+
+on:
+  schedule:
+    - cron: '30 23 * * *'
+  workflow_dispatch:
+
+env:
+  NEWS_TIMEZONE: Asia/Shanghai
+  NEWS_ITEM_LIMIT: '8'
+
+jobs:
+  publish-daily-news:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Publish daily AI and current affairs news
+        run: node scripts/publish-daily-news.mjs
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          INTERNAL_API_TOKEN: ${{ secrets.INTERNAL_API_TOKEN }}
+          NEWS_TIMEZONE: ${{ vars.NEWS_TIMEZONE || env.NEWS_TIMEZONE }}
+          NEWS_ITEM_LIMIT: ${{ vars.NEWS_ITEM_LIMIT || env.NEWS_ITEM_LIMIT }}
+          AI_NEWS_FEEDS: ${{ vars.AI_NEWS_FEEDS }}
+          CURRENT_AFFAIRS_FEEDS: ${{ vars.CURRENT_AFFAIRS_FEEDS }}

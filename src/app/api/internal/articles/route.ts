@@ -2,26 +2,31 @@ import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 import { assertInternalApiToken } from "@/lib/internal-api";
-import { createArticleRecord, normalizeArticleInput } from "@/lib/article-admin";
+import { createArticleRecord, normalizeArticleInput, upsertArticleRecordBySlug } from "@/lib/article-admin";
 
 export async function POST(request: NextRequest) {
   try {
     assertInternalApiToken(request);
     const body = await request.json();
     const articleInput = normalizeArticleInput(body ?? {});
-    const article = await createArticleRecord(articleInput);
+    const upsert = Boolean(body?.upsert);
+
+    const result = upsert
+      ? await upsertArticleRecordBySlug(articleInput)
+      : { article: await createArticleRecord(articleInput), created: true };
 
     revalidatePath("/");
     revalidatePath("/articles");
-    revalidatePath(`/articles/${article.slug}`);
+    revalidatePath(`/articles/${result.article.slug}`);
     revalidatePath("/admin");
 
     return NextResponse.json({
       ok: true,
+      created: result.created,
       article: {
-        id: article.id,
-        slug: article.slug,
-        title: article.title,
+        id: result.article.id,
+        slug: result.article.slug,
+        title: result.article.title,
       },
     });
   } catch (error) {
