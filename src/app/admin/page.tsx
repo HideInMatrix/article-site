@@ -1,0 +1,84 @@
+import Link from "next/link";
+
+import { FadeIn } from "@/components/motion/fade-in";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
+
+type AdminPageProps = {
+  searchParams: Promise<{
+    created?: string;
+  }>;
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const { created } = await searchParams;
+  const articles = await prisma.article.findMany({
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          likes: true,
+        },
+      },
+    },
+    orderBy: {
+      publishedAt: "desc",
+    },
+  });
+
+  return (
+    <section className="space-y-6">
+      {created ? (
+        <FadeIn>
+          <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            文章已发布：<span className="font-medium">{created}</span>
+          </div>
+        </FadeIn>
+      ) : null}
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        {articles.map((article, index) => (
+          <FadeIn key={article.id} delay={index * 0.04}>
+            <Card className="rounded-[1.75rem] border-slate-200/80 bg-white/95 shadow-sm">
+              <CardHeader>
+                <div className="flex items-center justify-between gap-3">
+                  <Badge variant="secondary" className="rounded-full px-3 py-1">{article.category}</Badge>
+                  <span className="text-xs text-slate-500">{article.slug}</span>
+                </div>
+                <CardTitle className="text-xl leading-8 tracking-tight">{article.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm text-slate-600">
+                <p className="line-clamp-3">{article.excerpt}</p>
+                <div className="flex flex-wrap gap-2">
+                  {article.tags.map((item) => (
+                    <span key={item.tag.slug} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
+                      #{item.tag.name}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>{article.authorName}</span>
+                  <span>{article.readTimeMinutes} min</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>{article._count.comments} 评论</span>
+                  <span>{article._count.likes} 点赞</span>
+                </div>
+                <Button asChild variant="outline" className="w-full rounded-2xl">
+                  <Link href={`/articles/${article.slug}`}>查看文章页</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </FadeIn>
+        ))}
+      </div>
+    </section>
+  );
+}
