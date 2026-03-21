@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { deleteArticleAction } from "@/app/admin/actions";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,11 +10,13 @@ import { prisma } from "@/lib/prisma";
 type AdminPageProps = {
   searchParams: Promise<{
     created?: string;
+    updated?: string;
+    deleted?: string;
   }>;
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { created } = await searchParams;
+  const { created, updated, deleted } = await searchParams;
   const articles = await prisma.article.findMany({
     include: {
       tags: {
@@ -39,6 +42,22 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <FadeIn>
           <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             文章已发布：<span className="font-medium">{created}</span>
+          </div>
+        </FadeIn>
+      ) : null}
+
+      {updated ? (
+        <FadeIn>
+          <div className="rounded-2xl bg-sky-50 px-4 py-3 text-sm text-sky-700">
+            文章已更新：<span className="font-medium">{updated}</span>
+          </div>
+        </FadeIn>
+      ) : null}
+
+      {deleted ? (
+        <FadeIn>
+          <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            文章已删除：<span className="font-medium">{deleted}</span>
           </div>
         </FadeIn>
       ) : null}
@@ -71,9 +90,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <span>{article._count.comments} 评论</span>
                   <span>{article._count.likes} 点赞</span>
                 </div>
-                <Button asChild variant="outline" className="w-full rounded-2xl">
-                  <Link href={`/articles/${article.slug}`}>查看文章页</Link>
-                </Button>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <Button asChild variant="outline" className="rounded-2xl">
+                    <Link href={`/articles/${article.slug}`}>查看</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-2xl">
+                    <Link href={`/admin/articles/${article.id}/edit`}>编辑</Link>
+                  </Button>
+                  <form action={deleteArticleAction}>
+                    <input type="hidden" name="articleId" value={article.id} />
+                    <Button type="submit" variant="destructive" className="w-full rounded-2xl">
+                      删除
+                    </Button>
+                  </form>
+                </div>
               </CardContent>
             </Card>
           </FadeIn>
