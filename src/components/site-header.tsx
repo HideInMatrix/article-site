@@ -39,21 +39,18 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
             </div>
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 md:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-3 md:flex">
             {navItems.map((item) => {
               const isActive = pathname === "/" && item.category === "";
               return (
-                <Link
+                <Button
                   key={item.label}
-                  href={buildCategoryHref(item.category)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                    isActive
-                      ? "bg-slate-950 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-white hover:text-slate-950"
-                  }`}
+                  asChild
+                  variant={isActive ? "default" : "ghost"}
+                  className="rounded-full px-4"
                 >
-                  {item.label}
-                </Link>
+                  <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                </Button>
               );
             })}
           </nav>
@@ -74,16 +71,16 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
               <SheetHeader>
                 <SheetTitle>文章分类</SheetTitle>
               </SheetHeader>
-              <div className="mt-6 space-y-5">
+              <div className="mt-6 flex flex-col gap-3">
                 {navItems.map((item) => (
-                  <Link key={item.label} href={buildCategoryHref(item.category)} className="block text-base font-medium text-slate-700">
-                    {item.label}
-                  </Link>
+                  <Button key={item.label} asChild variant="outline" className="justify-start rounded-2xl">
+                    <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                  </Button>
                 ))}
                 <Separator />
-                <Link href="/articles" className="block text-sm text-slate-500">
-                  查看全部文章与筛选页
-                </Link>
+                <Button asChild variant="ghost" className="justify-start rounded-2xl text-slate-500">
+                  <Link href="/articles">查看全部文章与筛选页</Link>
+                </Button>
               </div>
             </SheetContent>
           </Sheet>

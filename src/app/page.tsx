@@ -41,7 +41,6 @@ export default async function Home({ searchParams }: HomePageProps) {
       },
       _count: {
         select: {
-          comments: true,
           likes: true,
         },
       },
@@ -112,7 +111,6 @@ export default async function Home({ searchParams }: HomePageProps) {
                   authorName: article.authorName,
                   publishedAt: article.publishedAt,
                   readTimeMinutes: article.readTimeMinutes,
-                  commentCount: article._count.comments,
                   likeCount: article._count.likes,
                   tags: article.tags.map((item) => ({
                     slug: item.tag.slug,

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "文章列表",
-    description: "浏览最新发布的文章、讨论和点赞数据。",
+    description: "浏览最新发布的文章。",
     url: absoluteUrl("/articles"),
   },
 };
@@ -73,7 +73,6 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
         },
         _count: {
           select: {
-            comments: true,
             likes: true,
           },
         },
@@ -149,7 +148,6 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
                   authorName: article.authorName,
                   publishedAt: article.publishedAt,
                   readTimeMinutes: article.readTimeMinutes,
-                  commentCount: article._count.comments,
                   likeCount: article._count.likes,
                   tags: article.tags.map((item) => ({
                     slug: item.tag.slug,

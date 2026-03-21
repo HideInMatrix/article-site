@@ -60,24 +60,3 @@ export async function toggleArticleLikeAction(articleId: string, paths: string[]
     revalidatePath(path);
   }
 }
-
-export async function addCommentAction(articleId: string, paths: string[], formData: FormData) {
-  const authorName = String(formData.get("authorName") ?? "").trim();
-  const content = String(formData.get("content") ?? "").trim();
-
-  if (!authorName || !content) {
-    return;
-  }
-
-  await prisma.comment.create({
-    data: {
-      articleId,
-      authorName: authorName.slice(0, 40),
-      content: content.slice(0, 1000),
-    },
-  });
-
-  for (const path of paths) {
-    revalidatePath(path);
-  }
-}

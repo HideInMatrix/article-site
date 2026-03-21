@@ -2,18 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { Heart, MessageCircle, TimerReset } from "lucide-react";
+import { Heart, TimerReset } from "lucide-react";
 
-import { addCommentAction, toggleArticleLikeAction } from "@/app/actions";
+import { toggleArticleLikeAction } from "@/app/actions";
 import { FadeIn } from "@/components/motion/fade-in";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { formatDate, formatReadTime, getInitials, renderArticleBlocks } from "@/lib/content";
+import { formatDate, formatReadTime, renderArticleBlocks } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
 
@@ -32,13 +28,9 @@ async function getArticle(slug: string) {
           tag: true,
         },
       },
-      comments: {
-        orderBy: { createdAt: "desc" },
-      },
       likes: true,
       _count: {
         select: {
-          comments: true,
           likes: true,
         },
       },
@@ -116,7 +108,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const hasLiked = visitorId ? article.likes.some((like) => like.visitorId === visitorId) : false;
 
   const likeAction = toggleArticleLikeAction.bind(null, article.id, ["/", "/articles", `/articles/${article.slug}`]);
-  const commentAction = addCommentAction.bind(null, article.id, ["/", "/articles", `/articles/${article.slug}`]);
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -181,10 +172,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                 <Heart className="h-4 w-4" />
                 {article._count.likes}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-3 py-1 text-sky-700">
-                <MessageCircle className="h-4 w-4" />
-                {article._count.comments}
-              </span>
             </div>
           </header>
         </FadeIn>
@@ -218,60 +205,9 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                   </p>
                 </CardContent>
               </Card>
-
-              <Card className="rounded-[1.75rem] border-slate-200/80 bg-white/95 shadow-lg shadow-slate-200/60">
-                <CardHeader>
-                  <CardTitle className="text-lg">发表评论</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form action={commentAction} className="space-y-4">
-                    <Input name="authorName" placeholder="你的名字" required maxLength={40} />
-                    <Textarea name="content" placeholder="写下你的观点……" required maxLength={1000} className="min-h-32" />
-                    <Button type="submit" variant="secondary" className="w-full rounded-2xl shadow-sm">
-                      提交评论
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
             </div>
           </FadeIn>
         </div>
-
-        <FadeIn delay={0.18}>
-          <section className="space-y-5">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-2xl font-semibold tracking-tight">评论区</h2>
-              <span className="text-sm text-muted-foreground">共 {article._count.comments} 条评论</span>
-            </div>
-            <div className="space-y-4">
-              {article.comments.length === 0 ? (
-                <Card className="rounded-[1.75rem] border-dashed border-slate-300 bg-white/80 shadow-sm">
-                  <CardContent className="p-6 text-sm text-muted-foreground">还没有评论，来抢个沙发。</CardContent>
-                </Card>
-              ) : (
-                article.comments.map((comment, index) => (
-                  <Card key={comment.id} className="rounded-[1.75rem] border-slate-200/80 bg-white/95 shadow-sm">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-10 w-10 border border-border bg-white">
-                          <AvatarFallback>{getInitials(comment.authorName) || "CM"}</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1 space-y-2">
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="font-medium text-foreground">{comment.authorName}</div>
-                            <div className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</div>
-                          </div>
-                          <p className="text-sm leading-7 text-slate-700">{comment.content}</p>
-                        </div>
-                      </div>
-                      {index !== article.comments.length - 1 ? <Separator className="mt-6" /> : null}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </section>
-        </FadeIn>
       </article>
     </main>
   );

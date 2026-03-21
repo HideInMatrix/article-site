@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, TimerReset } from "lucide-react";
+import { Heart, TimerReset } from "lucide-react";
 
 import { HoverCardMotion } from "@/components/motion/hover-card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,6 @@ export type ArticleCardItem = {
   authorName: string;
   publishedAt: Date;
   readTimeMinutes: number;
-  commentCount: number;
   likeCount: number;
   tags: {
     slug: string;
@@ -67,10 +66,6 @@ export function ArticleCard({ article }: { article: ArticleCardItem }) {
           <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-rose-700">
             <Heart className="h-4 w-4" />
             {article.likeCount}
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 text-sky-700">
-            <MessageCircle className="h-4 w-4" />
-            {article.commentCount}
           </span>
           <span className="ml-auto inline-flex items-center gap-1.5 text-slate-500">
             <TimerReset className="h-4 w-4" />

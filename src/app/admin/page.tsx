@@ -26,7 +26,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       },
       _count: {
         select: {
-          comments: true,
           likes: true,
         },
       },
@@ -87,7 +86,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <span>{article.readTimeMinutes} min</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>{article._count.comments} 评论</span>
+                  <span>{new Intl.DateTimeFormat("zh-CN").format(article.publishedAt)}</span>
                   <span>{article._count.likes} 点赞</span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">

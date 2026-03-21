@@ -72,11 +72,7 @@ export function ArticleFilters({
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              asChild
-              variant={state.category ? "outline" : "secondary"}
-              className="rounded-full px-4"
-            >
+            <Button asChild variant={state.category ? "outline" : "secondary"} className="rounded-full px-4">
               <Link href={buildHref({ category: "" }, state)}>全部</Link>
             </Button>
             {categories.map((category) => (
@@ -98,17 +94,17 @@ export function ArticleFilters({
           <Separator className="my-4" />
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <Link
+              <Button
                 key={tag.slug}
-                href={buildHref({ tag: state.tag === tag.slug ? "" : tag.slug }, state)}
-                className={`rounded-full px-3 py-1.5 text-sm transition ${
-                  state.tag === tag.slug
-                    ? "bg-slate-950 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
+                asChild
+                variant={state.tag === tag.slug ? "default" : "outline"}
+                className="rounded-full px-4"
               >
-                #{tag.name} <span className="opacity-70">{tag.count}</span>
-              </Link>
+                <Link href={buildHref({ tag: state.tag === tag.slug ? "" : tag.slug }, state)}>
+                  #{tag.name}
+                  <span className="ml-1 opacity-70">{tag.count}</span>
+                </Link>
+              </Button>
             ))}
           </div>
         </div>
