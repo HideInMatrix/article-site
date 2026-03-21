@@ -20,6 +20,10 @@ export type ArticleCardItem = {
   readTimeMinutes: number;
   commentCount: number;
   likeCount: number;
+  tags: {
+    slug: string;
+    name: string;
+  }[];
 };
 
 export function ArticleCard({ article }: { article: ArticleCardItem }) {
@@ -42,6 +46,13 @@ export function ArticleCard({ article }: { article: ArticleCardItem }) {
         </CardHeader>
         <CardContent className="space-y-5 text-sm leading-7 text-muted-foreground">
           <p className="line-clamp-3">{article.excerpt}</p>
+          <div className="flex flex-wrap gap-2">
+            {article.tags.slice(0, 3).map((tag) => (
+              <span key={tag.slug} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
+                #{tag.name}
+              </span>
+            ))}
+          </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <Avatar className="h-9 w-9 border border-border bg-white">
               <AvatarFallback>{getInitials(article.authorName) || "AU"}</AvatarFallback>

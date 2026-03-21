@@ -18,6 +18,11 @@ const articles = [
     authorName: "David",
     readTimeMinutes: 8,
     publishedAt: new Date("2026-03-18T09:00:00.000Z"),
+    tags: [
+      { slug: "longform-writing", name: "长文写作" },
+      { slug: "content-structure", name: "内容结构" },
+      { slug: "reading-retention", name: "阅读完成率" },
+    ],
     content: `真正让人愿意读完的长文，不是信息最多，而是节奏最好。
 
 第一步先解决标题。标题不只是“告诉用户这篇文章写什么”，还要给读者一个继续往下看的理由：是方法、案例、还是一个悬而未决的问题。
@@ -47,6 +52,11 @@ const articles = [
     authorName: "David",
     readTimeMinutes: 6,
     publishedAt: new Date("2026-03-19T09:30:00.000Z"),
+    tags: [
+      { slug: "cold-start", name: "冷启动" },
+      { slug: "community-growth", name: "社区增长" },
+      { slug: "distribution", name: "内容分发" },
+    ],
     content: `大多数内容社区在冷启动阶段做错的第一件事，就是把注意力全放在“拉新数量”上。
 
 如果文章本身没有形成稳定的讨论回路，用户来了也只是看一眼就走。真正应该先打磨的是：内容有没有明确定位、首页有没有结构感、文章页有没有自然的互动入口。
@@ -70,6 +80,11 @@ const articles = [
     authorName: "David",
     readTimeMinutes: 5,
     publishedAt: new Date("2026-03-20T01:00:00.000Z"),
+    tags: [
+      { slug: "product-design", name: "产品设计" },
+      { slug: "interaction-design", name: "交互设计" },
+      { slug: "engagement", name: "互动设计" },
+    ],
     content: `很多页面把点赞、收藏、评论同时堆在最显眼的位置，结果反而增加了打断感。
 
 点赞适合在“用户刚刚获得一个小满足”的时刻出现，比如读完一段、看到结论、滑到结尾。
@@ -85,6 +100,8 @@ const articles = [
 async function main() {
   await prisma.comment.deleteMany();
   await prisma.articleLike.deleteMany();
+  await prisma.articleTag.deleteMany();
+  await prisma.tag.deleteMany();
   await prisma.article.deleteMany();
 
   for (const article of articles) {
@@ -103,6 +120,16 @@ async function main() {
         },
         likes: {
           create: article.likes.map((visitorId) => ({ visitorId })),
+        },
+        tags: {
+          create: article.tags.map((tag) => ({
+            tag: {
+              connectOrCreate: {
+                where: { slug: tag.slug },
+                create: tag,
+              },
+            },
+          })),
         },
       },
     });

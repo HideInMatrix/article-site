@@ -13,6 +13,11 @@ export default async function Home() {
   const [articles, articleCount, commentCount, likeCount] = await Promise.all([
     prisma.article.findMany({
       include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
         _count: {
           select: {
             comments: true,
@@ -40,6 +45,10 @@ export default async function Home() {
     readTimeMinutes: article.readTimeMinutes,
     commentCount: article._count.comments,
     likeCount: article._count.likes,
+    tags: article.tags.map((item) => ({
+      slug: item.tag.slug,
+      name: item.tag.name,
+    })),
   }));
 
   const structuredData = {

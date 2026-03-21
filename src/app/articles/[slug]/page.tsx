@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { Heart, MessageCircle, TimerReset } from "lucide-react";
 
 import { addCommentAction, toggleArticleLikeAction } from "@/app/actions";
@@ -26,6 +27,11 @@ async function getArticle(slug: string) {
   return prisma.article.findUnique({
     where: { slug },
     include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       comments: {
         orderBy: { createdAt: "desc" },
       },
@@ -42,7 +48,16 @@ async function getArticle(slug: string) {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = await prisma.article.findUnique({ where: { slug } });
+  const article = await prisma.article.findUnique({
+    where: { slug },
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  });
 
   if (!article) {
     return {
@@ -53,6 +68,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   return {
     title: article.title,
     description: article.excerpt,
+    keywords: article.tags.map((item) => item.tag.name),
     alternates: {
       canonical: `/articles/${article.slug}`,
     },
@@ -63,6 +79,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       url: absoluteUrl(`/articles/${article.slug}`),
       publishedTime: article.publishedAt.toISOString(),
       authors: [article.authorName],
+      tags: article.tags.map((item) => item.tag.name),
       siteName: siteConfig.name,
       images: [
         {
@@ -102,6 +119,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     "@type": "Article",
     headline: article.title,
     description: article.excerpt,
+    keywords: article.tags.map((item) => item.tag.name).join(", "),
     author: {
       "@type": "Person",
       name: article.authorName,
@@ -128,6 +146,17 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             <Badge variant="secondary" className="rounded-full px-3 py-1.5">{article.category}</Badge>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight text-slate-950 lg:text-5xl">{article.title}</h1>
             <p className="max-w-3xl text-lg leading-8 text-slate-600">{article.excerpt}</p>
+            <div className="flex flex-wrap gap-2">
+              {article.tags.map((item) => (
+                <Link
+                  key={item.tag.slug}
+                  href={`/articles?tag=${item.tag.slug}`}
+                  className="rounded-full bg-slate-100 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-200"
+                >
+                  #{item.tag.name}
+                </Link>
+              ))}
+            </div>
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
               <span>{article.authorName}</span>
               <span>{formatDate(article.publishedAt)}</span>
