@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { SiteHeader } from "@/components/site-header";
+import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -15,14 +16,14 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.author }],
   creator: siteConfig.author,
   publisher: siteConfig.author,
-  category: "technology",
+  category: siteConfig.category,
   applicationName: siteConfig.name,
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
-    locale: "zh_CN",
+    locale: siteConfig.locale,
     url: siteConfig.url,
     siteName: siteConfig.name,
     title: siteConfig.name,
@@ -38,6 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: siteConfig.xHandle,
+    creator: siteConfig.xHandle,
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
@@ -55,15 +58,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await prisma.article.findMany({
+    select: { category: true },
+    distinct: ["category"],
+    orderBy: { category: "asc" },
+  });
+
   return (
-    <html lang="zh-CN">
+    <html lang={siteConfig.language}>
       <body className="min-h-screen bg-[radial-gradient(circle_at_top,_#ffffff,_#f8fafc_45%,_#e2e8f0)] text-slate-900 antialiased">
-        <SiteHeader />
+        <SiteHeader categories={categories.map((item) => item.category)} />
         {children}
       </body>
     </html>

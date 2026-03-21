@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate, formatReadTime, getInitials, renderArticleBlocks } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
 
 type ArticlePageProps = {
   params: Promise<{
@@ -65,10 +65,12 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     };
   }
 
+  const articleKeywords = article.tags.map((item) => item.tag.name);
+
   return {
     title: article.title,
     description: article.excerpt,
-    keywords: article.tags.map((item) => item.tag.name),
+    keywords: keywordText([...articleKeywords, article.category, article.authorName]),
     alternates: {
       canonical: `/articles/${article.slug}`,
     },
@@ -79,7 +81,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       url: absoluteUrl(`/articles/${article.slug}`),
       publishedTime: article.publishedAt.toISOString(),
       authors: [article.authorName],
-      tags: article.tags.map((item) => item.tag.name),
+      tags: articleKeywords,
       siteName: siteConfig.name,
       images: [
         {
@@ -92,6 +94,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     },
     twitter: {
       card: "summary_large_image",
+      site: siteConfig.xHandle,
+      creator: siteConfig.xHandle,
       title: article.title,
       description: article.excerpt,
       images: [siteConfig.ogImage],
@@ -120,6 +124,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     headline: article.title,
     description: article.excerpt,
     keywords: article.tags.map((item) => item.tag.name).join(", "),
+    articleSection: article.category,
     author: {
       "@type": "Person",
       name: article.authorName,
@@ -130,7 +135,15 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
+      description: siteConfig.description,
+      url: siteConfig.url,
     },
+    audience: {
+      "@type": "Audience",
+      audienceType: siteConfig.geoAudience,
+    },
+    about: article.tags.map((item) => item.tag.name),
+    inLanguage: siteConfig.language,
   };
 
   return (
