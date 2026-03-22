@@ -138,7 +138,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   };
 
   return (
-    <main className="mx-auto max-w-4xl px-6 pb-16 pt-8 lg:px-10 lg:pb-24 lg:pt-10">
+    <main className="mx-auto max-w-7xl px-6 pb-16 pt-8 lg:px-10 lg:pb-24 lg:pt-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
