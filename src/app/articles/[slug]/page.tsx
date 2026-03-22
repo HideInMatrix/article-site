@@ -3,13 +3,15 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Heart, TimerReset } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { toggleArticleLikeAction } from "@/app/actions";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate, formatReadTime, renderArticleBlocks } from "@/lib/content";
+import { formatDate, formatReadTime } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
 
@@ -179,10 +181,10 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <FadeIn delay={0.05}>
             <Card className="rounded-[2rem] border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/60">
-              <CardContent className="space-y-6 p-8 text-base leading-8 text-slate-700 lg:p-10">
-                {renderArticleBlocks(article.content).map((block, index) => (
-                  <p key={`${article.id}-${index}`}>{block}</p>
-                ))}
+              <CardContent className="p-8 lg:p-10">
+                <div className="prose prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:font-semibold prose-h2:mt-10 prose-h2:text-2xl prose-h3:mt-8 prose-h3:text-xl prose-p:leading-8 prose-li:leading-8 prose-strong:text-slate-900 prose-a:text-sky-700 hover:prose-a:text-sky-600 prose-pre:rounded-2xl prose-pre:bg-slate-950 prose-blockquote:border-l-slate-300 prose-blockquote:text-slate-600">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
+                </div>
               </CardContent>
             </Card>
           </FadeIn>
