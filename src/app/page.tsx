@@ -72,25 +72,6 @@ export default async function Home({ searchParams }: HomePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <FadeIn>
-        <section className="mb-8 flex flex-wrap items-end justify-between gap-4 rounded-[2rem] border border-white/70 bg-white/82 p-8 shadow-xl shadow-slate-200/60 backdrop-blur">
-          <div>
-            <p className="text-sm font-medium text-slate-500">Latest reading</p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950 lg:text-5xl">
-              {activeCategory ? `${activeCategory} 文章` : "最新文章"}
-            </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-              {activeCategory
-                ? `当前正在浏览「${activeCategory}」分类下的文章。`
-                : "这里直接展示最新发布的文章，你可以通过顶部分类快速切换。"}
-            </p>
-          </div>
-          <div className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
-            共 {articles.length} 篇文章
-          </div>
-        </section>
-      </FadeIn>
-
       <section className="grid gap-5 lg:grid-cols-3">
         {articles.length === 0 ? (
           <Card className="col-span-full rounded-[1.75rem] border-dashed border-slate-300 bg-white/88 shadow-sm">
