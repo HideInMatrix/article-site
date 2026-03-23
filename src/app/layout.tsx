@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { GoogleAdSenseScript } from "@/components/ads/google-adsense-script";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site";
@@ -72,6 +73,7 @@ export default async function RootLayout({
   return (
     <html lang={siteConfig.language}>
       <body className="min-h-screen bg-[radial-gradient(circle_at_top,_#ffffff,_#f8fafc_45%,_#e2e8f0)] text-slate-900 antialiased">
+        <GoogleAdSenseScript />
         <SiteHeader categories={categories.map((item) => item.category)} />
         {children}
       </body>

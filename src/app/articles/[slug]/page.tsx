@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { toggleArticleLikeAction } from "@/app/actions";
+import { AdUnit } from "@/components/ads/ad-unit";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatReadTime } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
+
+const articleAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_ARTICLE || "";
 
 type ArticlePageProps = {
   params: Promise<{
@@ -191,6 +194,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
           <FadeIn delay={0.12}>
             <div className="space-y-6 lg:sticky lg:top-24">
+              {articleAdSlot ? <AdUnit slot={articleAdSlot} label="赞助内容" minHeight={250} /> : null}
               <Card className="rounded-[1.75rem] border-slate-200/80 bg-white/95 shadow-lg shadow-slate-200/60">
                 <CardHeader>
                   <CardTitle className="text-lg">互动</CardTitle>

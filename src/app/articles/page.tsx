@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AdUnit } from "@/components/ads/ad-unit";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleFilters } from "@/components/article-filters";
 import { FadeIn } from "@/components/motion/fade-in";
@@ -7,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site";
+
+const feedAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_FEED || "";
 
 export const metadata: Metadata = {
   title: "文章列表",
@@ -136,27 +139,39 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
             </CardContent>
           </Card>
         ) : (
-          articles.map((article, index) => (
-            <FadeIn key={article.id} delay={index * 0.04}>
-              <ArticleCard
-                article={{
-                  id: article.id,
-                  slug: article.slug,
-                  title: article.title,
-                  excerpt: article.excerpt,
-                  category: article.category,
-                  authorName: article.authorName,
-                  publishedAt: article.publishedAt,
-                  readTimeMinutes: article.readTimeMinutes,
-                  likeCount: article._count.likes,
-                  tags: article.tags.map((item) => ({
-                    slug: item.tag.slug,
-                    name: item.tag.name,
-                  })),
-                }}
-              />
-            </FadeIn>
-          ))
+          articles.flatMap((article, index) => {
+            const nodes = [
+              <FadeIn key={article.id} delay={index * 0.04}>
+                <ArticleCard
+                  article={{
+                    id: article.id,
+                    slug: article.slug,
+                    title: article.title,
+                    excerpt: article.excerpt,
+                    category: article.category,
+                    authorName: article.authorName,
+                    publishedAt: article.publishedAt,
+                    readTimeMinutes: article.readTimeMinutes,
+                    likeCount: article._count.likes,
+                    tags: article.tags.map((item) => ({
+                      slug: item.tag.slug,
+                      name: item.tag.name,
+                    })),
+                  }}
+                />
+              </FadeIn>,
+            ];
+
+            if (index === 2 && feedAdSlot) {
+              nodes.push(
+                <FadeIn key="feed-ad-articles" delay={0.16} className="lg:col-span-3">
+                  <AdUnit slot={feedAdSlot} label="赞助内容" minHeight={160} />
+                </FadeIn>
+              );
+            }
+
+            return nodes;
+          })
         )}
       </section>
     </main>
