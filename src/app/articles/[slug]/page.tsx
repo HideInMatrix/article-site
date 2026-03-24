@@ -192,7 +192,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           <FadeIn delay={0.05}>
             <Card className="rounded-[2rem] border-slate-200/80 bg-white/95 shadow-xl shadow-slate-200/60">
               <CardContent className="p-8 lg:p-10">
-                <div className="prose prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:font-semibold prose-h2:mt-10 prose-h2:text-2xl prose-h3:mt-8 prose-h3:text-xl prose-p:leading-8 prose-li:leading-8 prose-strong:text-slate-900 prose-a:text-sky-700 hover:prose-a:text-sky-600 prose-pre:rounded-2xl prose-pre:bg-slate-950 prose-blockquote:border-l-slate-300 prose-blockquote:text-slate-600">
+                <div className="article-markdown max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{localized.content}</ReactMarkdown>
                 </div>
               </CardContent>
