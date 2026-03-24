@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const [categories, latestArticles] = await Promise.all([

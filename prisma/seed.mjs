@@ -1,13 +1,7 @@
-import { PrismaLibSql } from "@prisma/adapter-libsql";
 import prismaClientPkg from "@prisma/client";
 
 const { PrismaClient } = prismaClientPkg;
-
-const adapter = new PrismaLibSql({
-  url: "file:./prisma/dev.db",
-});
-
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 const articles = [
   {

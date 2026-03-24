@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const adapter = new PrismaLibSql({
-  url: "file:./prisma/dev.db",
-});
+const fallbackDatabaseUrl = "postgresql://postgres:postgres@127.0.0.1:5432/article_site?schema=public";
+const connectionString = process.env.DATABASE_URL || fallbackDatabaseUrl;
+const adapter = new PrismaPg({ connectionString });
 
 declare global {
   var prismaGlobal: PrismaClient | undefined;

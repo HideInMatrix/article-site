@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 import { GoogleAdSenseScript } from "@/components/ads/google-adsense-script";
 import { SiteHeader } from "@/components/site-header";
 import { getLangAttribute } from "@/lib/i18n";
