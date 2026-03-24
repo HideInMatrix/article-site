@@ -3,6 +3,8 @@ import "./globals.css";
 
 import { GoogleAdSenseScript } from "@/components/ads/google-adsense-script";
 import { SiteHeader } from "@/components/site-header";
+import { getLangAttribute } from "@/lib/i18n";
+import { getRequestLocale } from "@/lib/locale-server";
 import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/lib/site";
 
@@ -64,17 +66,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await prisma.article.findMany({
-    select: { category: true },
-    distinct: ["category"],
-    orderBy: { category: "asc" },
-  });
+  const [categories, locale] = await Promise.all([
+    prisma.article.findMany({
+      select: { category: true },
+      distinct: ["category"],
+      orderBy: { category: "asc" },
+    }),
+    getRequestLocale(),
+  ]);
 
   return (
-    <html lang={siteConfig.language}>
+    <html lang={getLangAttribute(locale)}>
       <body className="min-h-screen bg-[radial-gradient(circle_at_top,_#ffffff,_#f8fafc_45%,_#e2e8f0)] text-slate-900 antialiased">
         <GoogleAdSenseScript />
-        <SiteHeader categories={categories.map((item) => item.category)} />
+        <SiteHeader categories={categories.map((item) => item.category)} locale={locale} />
         {children}
       </body>
     </html>

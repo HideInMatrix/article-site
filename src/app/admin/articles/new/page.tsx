@@ -20,7 +20,7 @@ export default async function NewArticlePage({ searchParams }: NewArticlePagePro
         <CardHeader>
           <CardTitle className="text-3xl">新建文章</CardTitle>
           <CardDescription>
-            这是当前最简单的一版后台内容录入。直接填写文章信息、标签和正文，即可发布到前台页面。
+            现在支持录入英文与繁体中文双语内容。英文为默认展示语言，繁中用于切换后展示。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -31,20 +31,27 @@ export default async function NewArticlePage({ searchParams }: NewArticlePagePro
           ) : null}
           <form action={createArticleAction} className="grid gap-5">
             <div className="grid gap-5 md:grid-cols-2">
-              <Input name="title" placeholder="文章标题" required />
-              <Input name="slug" placeholder="URL slug（可留空自动生成）" />
+              <Input name="titleEn" placeholder="English title" required />
+              <Input name="titleZhHant" placeholder="繁體中文標題" required />
             </div>
-            <Textarea name="excerpt" placeholder="文章摘要" required className="min-h-24" />
+            <Input name="slug" placeholder="URL slug（可留空自动生成）" />
+            <div className="grid gap-5 md:grid-cols-2">
+              <Textarea name="excerptEn" placeholder="English excerpt" required className="min-h-24" />
+              <Textarea name="excerptZhHant" placeholder="繁體中文摘要" required className="min-h-24" />
+            </div>
             <div className="grid gap-5 md:grid-cols-3">
-              <Input name="category" placeholder="分类，如：产品设计" required />
-              <Input name="authorName" placeholder="作者名" required defaultValue="David" />
+              <Input name="category" placeholder="分类，如：AI热点 / 科技热点" required />
+              <Input name="authorName" placeholder="作者名" required defaultValue="Daily News Bot" />
               <Input name="readTimeMinutes" type="number" min={1} placeholder="阅读分钟数" required defaultValue="6" />
             </div>
             <div className="grid gap-5 md:grid-cols-2">
-              <Input name="tags" placeholder="标签，逗号分隔，如：SEO, 增长, 产品" />
+              <Input name="tags" placeholder="标签，逗号分隔，如：AI, Tech, Startups" />
               <Input name="publishedAt" type="datetime-local" />
             </div>
-            <Textarea name="content" placeholder="正文内容，段落之间空一行。" required className="min-h-[280px]" />
+            <div className="grid gap-5 md:grid-cols-2">
+              <Textarea name="contentEn" placeholder="English markdown content" required className="min-h-[320px]" />
+              <Textarea name="contentZhHant" placeholder="繁體中文 Markdown 正文" required className="min-h-[320px]" />
+            </div>
             <div className="flex justify-end">
               <Button type="submit" className="rounded-2xl px-6 shadow-sm">
                 发布文章

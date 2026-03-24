@@ -8,12 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatReadTime, getInitials } from "@/lib/content";
+import { pickLocalizedArticle, translateCategory, type SiteLocale } from "@/lib/i18n";
 
 export type ArticleCardItem = {
   id: string;
   slug: string;
   title: string;
+  titleEn?: string | null;
+  titleZhHant?: string | null;
   excerpt: string;
+  excerptEn?: string | null;
+  excerptZhHant?: string | null;
   category: string;
   authorName: string;
   publishedAt: Date;
@@ -25,7 +30,9 @@ export type ArticleCardItem = {
   }[];
 };
 
-export function ArticleCard({ article }: { article: ArticleCardItem }) {
+export function ArticleCard({ article, locale }: { article: ArticleCardItem; locale: SiteLocale }) {
+  const localized = pickLocalizedArticle(article, locale);
+
   return (
     <HoverCardMotion>
       <Card className="group h-full overflow-hidden rounded-[1.75rem] border-slate-200/80 bg-white/95 shadow-sm ring-1 ring-white/70 transition hover:shadow-2xl hover:shadow-slate-200/80">
@@ -33,18 +40,18 @@ export function ArticleCard({ article }: { article: ArticleCardItem }) {
         <CardHeader className="gap-4">
           <div className="flex items-center justify-between gap-3">
             <Badge variant="secondary" className="rounded-full px-3 py-1">
-              {article.category}
+              {translateCategory(article.category, locale)}
             </Badge>
-            <span className="text-xs text-muted-foreground">{formatDate(article.publishedAt)}</span>
+            <span className="text-xs text-muted-foreground">{formatDate(article.publishedAt, locale)}</span>
           </div>
           <CardTitle className="text-xl leading-8 tracking-tight text-slate-950">
             <Link href={`/articles/${article.slug}`} className="transition hover:text-primary">
-              {article.title}
+              {localized.title}
             </Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 text-sm leading-7 text-muted-foreground">
-          <p className="line-clamp-3">{article.excerpt}</p>
+          <p className="line-clamp-3">{localized.excerpt}</p>
           <div className="flex flex-wrap gap-2">
             {article.tags.slice(0, 3).map((tag) => (
               <span key={tag.slug} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
@@ -58,7 +65,7 @@ export function ArticleCard({ article }: { article: ArticleCardItem }) {
             </Avatar>
             <div>
               <div className="font-medium text-foreground">{article.authorName}</div>
-              <div>{formatReadTime(article.readTimeMinutes)}</div>
+              <div>{formatReadTime(article.readTimeMinutes, locale)}</div>
             </div>
           </div>
         </CardContent>
@@ -69,7 +76,7 @@ export function ArticleCard({ article }: { article: ArticleCardItem }) {
           </span>
           <span className="ml-auto inline-flex items-center gap-1.5 text-slate-500">
             <TimerReset className="h-4 w-4" />
-            {article.readTimeMinutes} min
+            {locale === "zh-Hant" ? `${article.readTimeMinutes} 分鐘` : `${article.readTimeMinutes} min`}
           </span>
         </CardFooter>
       </Card>

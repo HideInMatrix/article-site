@@ -4,25 +4,34 @@ import { AdUnit } from "@/components/ads/ad-unit";
 import { ArticleCard } from "@/components/article-card";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Card, CardContent } from "@/components/ui/card";
+import { getUiText } from "@/lib/i18n";
+import { getRequestLocale } from "@/lib/locale-server";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
 
 const feedAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_FEED || "";
 
-export const metadata: Metadata = {
-  title: "首页",
-  description: "阅读最新文章，按顶部分类快速切换，浏览这个内容网站的最新发布内容。",
-  keywords: keywordText(["首页", "最新文章", "分类阅读"]),
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: siteConfig.name,
-    description: "阅读最新文章，按顶部分类快速切换。",
-    url: absoluteUrl("/"),
-    images: [siteConfig.ogImage],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const isZhHant = locale === "zh-Hant";
+
+  return {
+    title: isZhHant ? "首頁" : "Home",
+    description: isZhHant
+      ? "閱讀最新文章，按頂部分類快速切換，瀏覽網站最新內容。"
+      : "Read the latest stories, switch categories quickly, and browse the newest articles.",
+    keywords: keywordText(isZhHant ? ["首頁", "最新文章", "分類閱讀"] : ["home", "latest articles", "category browsing"]),
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title: siteConfig.name,
+      description: isZhHant ? "閱讀最新文章，按頂部分類快速切換。" : "Read the latest articles and switch categories quickly.",
+      url: absoluteUrl("/"),
+      images: [siteConfig.ogImage],
+    },
+  };
+}
 
 type HomePageProps = {
   searchParams: Promise<{
@@ -31,8 +40,9 @@ type HomePageProps = {
 };
 
 export default async function Home({ searchParams }: HomePageProps) {
-  const { category } = await searchParams;
+  const [{ category }, locale] = await Promise.all([searchParams, getRequestLocale()]);
   const activeCategory = category?.trim() ?? "";
+  const t = getUiText(locale);
 
   const articles = await prisma.article.findMany({
     where: activeCategory ? { category: activeCategory } : undefined,
@@ -56,12 +66,14 @@ export default async function Home({ searchParams }: HomePageProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: activeCategory ? `${activeCategory} 文章` : siteConfig.name,
+    name: activeCategory ? `${activeCategory} articles` : siteConfig.name,
     description: activeCategory
-      ? `浏览 ${activeCategory} 分类下的最新文章。`
+      ? locale === "zh-Hant"
+        ? `瀏覽 ${activeCategory} 分類下的最新文章。`
+        : `Browse the latest articles in ${activeCategory}.`
       : siteConfig.geoSummary,
     url: activeCategory ? absoluteUrl(`/?category=${encodeURIComponent(activeCategory)}`) : siteConfig.url,
-    inLanguage: siteConfig.language,
+    inLanguage: locale,
     audience: {
       "@type": "Audience",
       audienceType: siteConfig.geoAudience,
@@ -79,7 +91,7 @@ export default async function Home({ searchParams }: HomePageProps) {
         {articles.length === 0 ? (
           <Card className="col-span-full rounded-[1.75rem] border-dashed border-slate-300 bg-white/88 shadow-sm">
             <CardContent className="p-8 text-center text-sm text-muted-foreground">
-              这个分类下还没有文章，换一个分类看看。
+              {t.noArticlesForCategory}
             </CardContent>
           </Card>
         ) : (
@@ -87,11 +99,16 @@ export default async function Home({ searchParams }: HomePageProps) {
             const nodes = [
               <FadeIn key={article.id} delay={index * 0.04}>
                 <ArticleCard
+                  locale={locale}
                   article={{
                     id: article.id,
                     slug: article.slug,
                     title: article.title,
+                    titleEn: article.titleEn,
+                    titleZhHant: article.titleZhHant,
                     excerpt: article.excerpt,
+                    excerptEn: article.excerptEn,
+                    excerptZhHant: article.excerptZhHant,
                     category: article.category,
                     authorName: article.authorName,
                     publishedAt: article.publishedAt,
@@ -109,7 +126,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             if (index === 2 && feedAdSlot) {
               nodes.push(
                 <FadeIn key="feed-ad-home" delay={0.16} className="lg:col-span-3">
-                  <AdUnit slot={feedAdSlot} label="赞助内容" minHeight={160} />
+                  <AdUnit slot={feedAdSlot} label={t.sponsored} minHeight={160} />
                 </FadeIn>
               );
             }

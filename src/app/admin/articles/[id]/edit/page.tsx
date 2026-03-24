@@ -48,7 +48,7 @@ export default async function EditArticlePage({ params, searchParams }: EditArti
         <CardHeader>
           <CardTitle className="text-3xl">编辑文章</CardTitle>
           <CardDescription>
-            修改文章标题、分类、标签和正文内容，保存后会同步更新前台页面。
+            修改英文与繁体中文双语内容，保存后会同步更新前台页面。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -60,24 +60,31 @@ export default async function EditArticlePage({ params, searchParams }: EditArti
           <form action={updateArticleAction} className="grid gap-5">
             <input type="hidden" name="articleId" value={article.id} />
             <div className="grid gap-5 md:grid-cols-2">
-              <Input name="title" placeholder="文章标题" required defaultValue={article.title} />
-              <Input name="slug" placeholder="URL slug（可留空自动生成）" defaultValue={article.slug} />
+              <Input name="titleEn" placeholder="English title" required defaultValue={article.titleEn ?? article.title} />
+              <Input name="titleZhHant" placeholder="繁體中文標題" required defaultValue={article.titleZhHant ?? article.title} />
             </div>
-            <Textarea name="excerpt" placeholder="文章摘要" required className="min-h-24" defaultValue={article.excerpt} />
+            <Input name="slug" placeholder="URL slug（可留空自动生成）" defaultValue={article.slug} />
+            <div className="grid gap-5 md:grid-cols-2">
+              <Textarea name="excerptEn" placeholder="English excerpt" required className="min-h-24" defaultValue={article.excerptEn ?? article.excerpt} />
+              <Textarea name="excerptZhHant" placeholder="繁體中文摘要" required className="min-h-24" defaultValue={article.excerptZhHant ?? article.excerpt} />
+            </div>
             <div className="grid gap-5 md:grid-cols-3">
-              <Input name="category" placeholder="分类，如：产品设计" required defaultValue={article.category} />
+              <Input name="category" placeholder="分类，如：AI热点 / 科技热点" required defaultValue={article.category} />
               <Input name="authorName" placeholder="作者名" required defaultValue={article.authorName} />
               <Input name="readTimeMinutes" type="number" min={1} placeholder="阅读分钟数" required defaultValue={article.readTimeMinutes} />
             </div>
             <div className="grid gap-5 md:grid-cols-2">
               <Input
                 name="tags"
-                placeholder="标签，逗号分隔，如：SEO, 增长, 产品"
+                placeholder="标签，逗号分隔，如：AI, Tech, Startups"
                 defaultValue={article.tags.map((item) => item.tag.name).join(", ")}
               />
               <Input name="publishedAt" type="datetime-local" defaultValue={toDatetimeLocalValue(article.publishedAt)} />
             </div>
-            <Textarea name="content" placeholder="正文内容，段落之间空一行。" required className="min-h-[280px]" defaultValue={article.content} />
+            <div className="grid gap-5 md:grid-cols-2">
+              <Textarea name="contentEn" placeholder="English markdown content" required className="min-h-[320px]" defaultValue={article.contentEn ?? article.content} />
+              <Textarea name="contentZhHant" placeholder="繁體中文 Markdown 正文" required className="min-h-[320px]" defaultValue={article.contentZhHant ?? article.content} />
+            </div>
             <div className="flex justify-end">
               <Button type="submit" className="rounded-2xl px-6 shadow-sm">
                 保存修改

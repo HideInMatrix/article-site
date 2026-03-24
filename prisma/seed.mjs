@@ -11,87 +11,71 @@ const prisma = new PrismaClient({ adapter });
 
 const articles = [
   {
-    slug: "write-longform-that-gets-finished",
-    title: "怎么设计一篇会让人愿意读完的长文？",
-    excerpt: "从标题、开头、段落节奏到结尾互动，系统性提升文章的阅读完成率。",
+    slug: "design-longform-articles-read-through",
+    title: "How do you design a long-form article that people actually finish?",
+    titleEn: "How do you design a long-form article that people actually finish?",
+    titleZhHant: "如何設計一篇讓人願意讀完的長文？",
+    excerpt: "A practical look at titles, openings, pacing, and endings that improve read-through rates.",
+    excerptEn: "A practical look at titles, openings, pacing, and endings that improve read-through rates.",
+    excerptZhHant: "從標題、開頭、段落節奏到結尾互動，系統性提升文章的閱讀完成率。",
     category: "写作方法",
     authorName: "David",
     readTimeMinutes: 8,
     publishedAt: new Date("2026-03-18T09:00:00.000Z"),
     tags: [
-      { slug: "longform-writing", name: "长文写作" },
-      { slug: "content-structure", name: "内容结构" },
-      { slug: "reading-retention", name: "阅读完成率" },
+      { slug: "longform-writing", name: "longform" },
+      { slug: "content-structure", name: "structure" },
+      { slug: "reading-retention", name: "retention" },
     ],
-    content: `真正让人愿意读完的长文，不是信息最多，而是节奏最好。
-
-第一步先解决标题。标题不只是“告诉用户这篇文章写什么”，还要给读者一个继续往下看的理由：是方法、案例、还是一个悬而未决的问题。
-
-第二步是开头。好的开头不应该绕太久，而要在三到五句话之内建立阅读预期。用户读到这里就会判断：这篇文章值不值得继续花时间。
-
-第三步是正文的段落组织。长文不是把内容堆长，而是把每一段都变成一个小的推进点。每个小标题都应该像路标，帮助读者降低迷失感。
-
-最后是结尾。结尾不是简单总结，而是把“读完之后下一步能做什么”交还给读者。你可以引导评论、提问、收藏，或者让用户进入相关文章。`,
-    comments: [
-      {
-        authorName: "Mia",
-        content: "我很认同“结尾要给下一步动作”这个点，很多内容站都忽略了。",
-      },
-      {
-        authorName: "Leo",
-        content: "如果后面能再加几个长文结构模板就更好了。",
-      },
-    ],
+    content: `The best long-form articles are not the ones with the most information. They are the ones with the best rhythm.\n\nA strong title does more than describe the topic. It gives readers a reason to continue. An effective opening should set expectations quickly, and the body should be structured in a way that keeps readers oriented instead of lost.\n\nIn practice, long-form writing works when every section feels like progress. Readers should always know why they are still reading and what they will gain by reaching the end.\n\nA conclusion should not merely summarize. It should help the reader decide what to do next — comment, save, share, or continue reading related work.`,
+    contentEn: `The best long-form articles are not the ones with the most information. They are the ones with the best rhythm.\n\nA strong title does more than describe the topic. It gives readers a reason to continue. An effective opening should set expectations quickly, and the body should be structured in a way that keeps readers oriented instead of lost.\n\nIn practice, long-form writing works when every section feels like progress. Readers should always know why they are still reading and what they will gain by reaching the end.\n\nA conclusion should not merely summarize. It should help the reader decide what to do next — comment, save, share, or continue reading related work.`,
+    contentZhHant: `真正讓人願意讀完的長文，不是資訊最多，而是節奏最好。\n\n好的標題不只是告訴讀者文章在寫什麼，更要提供一個繼續往下看的理由。好的開頭則應該在很短的篇幅內建立閱讀預期，讓讀者快速判斷這篇文章值不值得投入時間。\n\n長文真正有效的地方，在於每一段都像一個明確的推進點。讀者應該始終知道自己為什麼還在讀，以及讀完後會得到什麼。\n\n結尾也不應只是重複總結，而應該把下一步交還給讀者：留言、收藏、分享，或者繼續閱讀相關內容。`,
+    comments: [],
     likes: ["seed-like-1", "seed-like-2", "seed-like-3"],
   },
   {
     slug: "community-cold-start-first-100-readers",
-    title: "社区冷启动：前 100 位读者到底该怎么来？",
-    excerpt: "早期不要急着投放，先把内容结构、讨论机制和分发路径做通。",
+    title: "Community cold start: how do you get the first 100 readers?",
+    titleEn: "Community cold start: how do you get the first 100 readers?",
+    titleZhHant: "社群冷啟動：前 100 位讀者到底該怎麼來？",
+    excerpt: "In the early stage, discussion quality matters more than raw acquisition volume.",
+    excerptEn: "In the early stage, discussion quality matters more than raw acquisition volume.",
+    excerptZhHant: "早期不要急著投放，先把內容結構、討論機制和分發路徑做通。",
     category: "社区增长",
     authorName: "David",
     readTimeMinutes: 6,
     publishedAt: new Date("2026-03-19T09:30:00.000Z"),
     tags: [
-      { slug: "cold-start", name: "冷启动" },
-      { slug: "community-growth", name: "社区增长" },
-      { slug: "distribution", name: "内容分发" },
+      { slug: "cold-start", name: "cold-start" },
+      { slug: "community-growth", name: "community-growth" },
+      { slug: "distribution", name: "distribution" },
     ],
-    content: `大多数内容社区在冷启动阶段做错的第一件事，就是把注意力全放在“拉新数量”上。
-
-如果文章本身没有形成稳定的讨论回路，用户来了也只是看一眼就走。真正应该先打磨的是：内容有没有明确定位、首页有没有结构感、文章页有没有自然的互动入口。
-
-前一百位读者最重要的不是规模，而是反馈质量。你需要观察他们停在哪里、聊什么、愿不愿意留下评论，以及哪些文章能自然带来第二次访问。
-
-早期最有效的增长往往来自高密度的小分发：朋友网络、垂直社群、作者转发，以及自己可持续产出的系列内容。`,
-    comments: [
-      {
-        authorName: "Ava",
-        content: "确实，先把讨论闭环打通，比盲目拉新更重要。",
-      },
-    ],
+    content: `Most content communities fail early because they optimize for acquisition volume before they optimize for discussion quality.\n\nIf your articles do not create a reason for readers to return, comment, or share, bringing in more traffic only amplifies the weakness.\n\nThe first 100 readers matter because they help you understand whether your positioning, homepage structure, and interaction design are actually working. Their behavior is more valuable than vanity metrics.\n\nIn the early phase, small but high-quality distribution usually beats broad but shallow exposure.`,
+    contentEn: `Most content communities fail early because they optimize for acquisition volume before they optimize for discussion quality.\n\nIf your articles do not create a reason for readers to return, comment, or share, bringing in more traffic only amplifies the weakness.\n\nThe first 100 readers matter because they help you understand whether your positioning, homepage structure, and interaction design are actually working. Their behavior is more valuable than vanity metrics.\n\nIn the early phase, small but high-quality distribution usually beats broad but shallow exposure.`,
+    contentZhHant: `大多數內容社群在冷啟動階段會做錯的第一件事，就是太早把注意力放在拉新數量上。\n\n如果文章本身沒有形成穩定的討論回路，讀者來了也只是看一眼就走。真正應該先打磨的是：定位是否清晰、首頁是否有結構感、文章頁是否有自然的互動入口。\n\n前一百位讀者的重要性，不在於規模，而在於他們提供的訊號。你需要觀察他們停在哪裡、會不會留言、會不會回訪，以及哪些內容最容易帶來第二次打開。\n\n在早期，高密度的小範圍分發，往往比看似更大的曝光更有效。`,
+    comments: [],
     likes: ["seed-like-4", "seed-like-5"],
   },
   {
-    slug: "when-to-show-like-save-comment-actions",
-    title: "点赞、收藏、评论，分别应该在什么时机出现？",
-    excerpt: "互动入口不是越多越好，而是要在用户最自然的时刻出现。",
+    slug: "when-to-show-like-actions",
+    title: "When should like, save, and comment actions appear?",
+    titleEn: "When should like, save, and comment actions appear?",
+    titleZhHant: "點讚、收藏、留言，分別應該在什麼時機出現？",
+    excerpt: "Engagement entry points work best when they feel natural, not interruptive.",
+    excerptEn: "Engagement entry points work best when they feel natural, not interruptive.",
+    excerptZhHant: "互動入口不是越多越好，而是要在使用者最自然的時刻出現。",
     category: "产品设计",
     authorName: "David",
     readTimeMinutes: 5,
     publishedAt: new Date("2026-03-20T01:00:00.000Z"),
     tags: [
-      { slug: "product-design", name: "产品设计" },
-      { slug: "interaction-design", name: "交互设计" },
-      { slug: "engagement", name: "互动设计" },
+      { slug: "product-design", name: "product-design" },
+      { slug: "interaction-design", name: "interaction-design" },
+      { slug: "engagement", name: "engagement" },
     ],
-    content: `很多页面把点赞、收藏、评论同时堆在最显眼的位置，结果反而增加了打断感。
-
-点赞适合在“用户刚刚获得一个小满足”的时刻出现，比如读完一段、看到结论、滑到结尾。
-
-收藏通常意味着用户想“以后再看”，所以它更适合出现在文章有清晰知识价值的时候，比如方法总结、资料清单、步骤指南附近。
-
-评论则是表达欲最强的动作，应该在用户有观点、想补充或想反驳的时候提供入口。最常见的位置是结尾，但如果中间有强观点段落，也可以设计局部讨论。`,
+    content: `Engagement controls do not become better simply because there are more of them. In many products, too many actions increase friction.\n\nA like button works best when the reader has just experienced a small moment of satisfaction. A save action works best when a piece of content clearly signals future utility.\n\nComments require even more intention, so they should appear when the reader has a reason to react, add context, or disagree.\n\nThe key is not volume of actions but timing and emotional fit.`,
+    contentEn: `Engagement controls do not become better simply because there are more of them. In many products, too many actions increase friction.\n\nA like button works best when the reader has just experienced a small moment of satisfaction. A save action works best when a piece of content clearly signals future utility.\n\nComments require even more intention, so they should appear when the reader has a reason to react, add context, or disagree.\n\nThe key is not volume of actions but timing and emotional fit.`,
+    contentZhHant: `互動入口不會因為數量變多就自然變得更好。很多產品把點讚、收藏、留言全部堆在最顯眼的位置，結果反而增加了打斷感。\n\n點讚通常適合出現在讀者剛獲得小滿足的時刻；收藏則更適合在內容明顯具有後續價值時出現。\n\n留言需要更強的表達意願，因此應該在讀者有觀點、有補充或想反駁時提供入口。\n\n真正重要的不是互動按鈕有多少，而是它們是否在合適的時機出現。`,
     comments: [],
     likes: ["seed-like-6"],
   },
@@ -109,8 +93,14 @@ async function main() {
       data: {
         slug: article.slug,
         title: article.title,
+        titleEn: article.titleEn,
+        titleZhHant: article.titleZhHant,
         excerpt: article.excerpt,
+        excerptEn: article.excerptEn,
+        excerptZhHant: article.excerptZhHant,
         content: article.content,
+        contentEn: article.contentEn,
+        contentZhHant: article.contentZhHant,
         category: article.category,
         authorName: article.authorName,
         readTimeMinutes: article.readTimeMinutes,

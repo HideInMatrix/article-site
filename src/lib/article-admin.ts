@@ -37,9 +37,15 @@ export function parseTagsInput(input: unknown) {
 
 export type NormalizedArticleInput = {
   title: string;
+  titleEn: string;
+  titleZhHant: string;
   slug: string;
   excerpt: string;
+  excerptEn: string;
+  excerptZhHant: string;
   content: string;
+  contentEn: string;
+  contentZhHant: string;
   category: string;
   authorName: string;
   readTimeMinutes: number;
@@ -49,20 +55,36 @@ export type NormalizedArticleInput = {
 
 export function normalizeArticleInput(raw: Record<string, unknown>): NormalizedArticleInput {
   const title = String(raw.title ?? "").trim();
+  const titleEn = String(raw.titleEn ?? raw.title ?? "").trim();
+  const titleZhHant = String(raw.titleZhHant ?? raw.title ?? "").trim();
   const slugInput = String(raw.slug ?? "").trim();
   const excerpt = String(raw.excerpt ?? "").trim();
+  const excerptEn = String(raw.excerptEn ?? raw.excerpt ?? "").trim();
+  const excerptZhHant = String(raw.excerptZhHant ?? raw.excerpt ?? "").trim();
   const content = String(raw.content ?? "").trim();
+  const contentEn = String(raw.contentEn ?? raw.content ?? "").trim();
+  const contentZhHant = String(raw.contentZhHant ?? raw.content ?? "").trim();
   const category = String(raw.category ?? "").trim();
   const authorName = String(raw.authorName ?? "").trim();
   const readTimeMinutes = Number(String(raw.readTimeMinutes ?? "0"));
   const publishedAtInput = String(raw.publishedAt ?? "").trim();
   const tags = parseTagsInput(raw.tags);
 
+  const canonicalTitle = title || titleEn || titleZhHant;
+  const canonicalExcerpt = excerpt || excerptEn || excerptZhHant;
+  const canonicalContent = content || contentEn || contentZhHant;
+
   return {
-    title,
-    slug: slugify(slugInput || title),
-    excerpt,
-    content,
+    title: canonicalTitle,
+    titleEn: titleEn || canonicalTitle,
+    titleZhHant: titleZhHant || canonicalTitle,
+    slug: slugify(slugInput || canonicalTitle),
+    excerpt: canonicalExcerpt,
+    excerptEn: excerptEn || canonicalExcerpt,
+    excerptZhHant: excerptZhHant || canonicalExcerpt,
+    content: canonicalContent,
+    contentEn: contentEn || canonicalContent,
+    contentZhHant: contentZhHant || canonicalContent,
     category,
     authorName,
     readTimeMinutes,
@@ -74,8 +96,14 @@ export function normalizeArticleInput(raw: Record<string, unknown>): NormalizedA
 export function assertArticleInput(articleInput: NormalizedArticleInput) {
   if (
     !articleInput.title ||
+    !articleInput.titleEn ||
+    !articleInput.titleZhHant ||
     !articleInput.excerpt ||
+    !articleInput.excerptEn ||
+    !articleInput.excerptZhHant ||
     !articleInput.content ||
+    !articleInput.contentEn ||
+    !articleInput.contentZhHant ||
     !articleInput.category ||
     !articleInput.authorName ||
     !articleInput.readTimeMinutes ||
@@ -115,9 +143,15 @@ export async function createArticleRecord(articleInput: NormalizedArticleInput) 
   return prisma.article.create({
     data: {
       title: articleInput.title,
+      titleEn: articleInput.titleEn,
+      titleZhHant: articleInput.titleZhHant,
       slug: articleInput.slug,
       excerpt: articleInput.excerpt,
+      excerptEn: articleInput.excerptEn,
+      excerptZhHant: articleInput.excerptZhHant,
       content: articleInput.content,
+      contentEn: articleInput.contentEn,
+      contentZhHant: articleInput.contentZhHant,
       category: articleInput.category,
       authorName: articleInput.authorName,
       readTimeMinutes: articleInput.readTimeMinutes,
@@ -146,9 +180,15 @@ export async function upsertArticleRecordBySlug(articleInput: NormalizedArticleI
     where: { id: existing.id },
     data: {
       title: articleInput.title,
+      titleEn: articleInput.titleEn,
+      titleZhHant: articleInput.titleZhHant,
       slug: articleInput.slug,
       excerpt: articleInput.excerpt,
+      excerptEn: articleInput.excerptEn,
+      excerptZhHant: articleInput.excerptZhHant,
       content: articleInput.content,
+      contentEn: articleInput.contentEn,
+      contentZhHant: articleInput.contentZhHant,
       category: articleInput.category,
       authorName: articleInput.authorName,
       readTimeMinutes: articleInput.readTimeMinutes,
@@ -181,9 +221,15 @@ export async function updateArticleRecord(articleId: string, articleInput: Norma
     where: { id: articleId },
     data: {
       title: articleInput.title,
+      titleEn: articleInput.titleEn,
+      titleZhHant: articleInput.titleZhHant,
       slug: articleInput.slug,
       excerpt: articleInput.excerpt,
+      excerptEn: articleInput.excerptEn,
+      excerptZhHant: articleInput.excerptZhHant,
       content: articleInput.content,
+      contentEn: articleInput.contentEn,
+      contentZhHant: articleInput.contentZhHant,
       category: articleInput.category,
       authorName: articleInput.authorName,
       readTimeMinutes: articleInput.readTimeMinutes,

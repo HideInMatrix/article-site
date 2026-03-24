@@ -4,25 +4,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpenText, Menu } from "lucide-react";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { getUiText, translateCategory, type SiteLocale } from "@/lib/i18n";
 
 type SiteHeaderProps = {
   categories: string[];
+  locale: SiteLocale;
 };
 
 function buildCategoryHref(category: string) {
   return category ? `/?category=${encodeURIComponent(category)}` : "/";
 }
 
-export function SiteHeader({ categories }: SiteHeaderProps) {
+export function SiteHeader({ categories, locale }: SiteHeaderProps) {
   const pathname = usePathname();
+  const t = getUiText(locale);
 
   const navItems = [
-    { label: "全部", category: "" },
-    ...categories.map((category) => ({ label: category, category })),
+    { label: t.allCategories, category: "" },
+    ...categories.map((category) => ({ label: translateCategory(category, locale), category })),
   ];
 
   return (
@@ -34,8 +38,8 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
               <BookOpenText className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-sm font-medium text-slate-500">文章阅读网站</div>
-              <div className="text-lg font-semibold tracking-tight text-slate-950">Article Site Starter</div>
+              <div className="text-sm font-medium text-slate-500">{t.siteSubtitle}</div>
+              <div className="text-lg font-semibold tracking-tight text-slate-950">{locale === "zh-Hant" ? "每日AI與時政熱點" : "Daily AI & Current Affairs"}</div>
             </div>
           </Link>
 
@@ -55,10 +59,11 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
             })}
           </nav>
 
-          <div className="hidden shrink-0 md:block">
+          <div className="hidden shrink-0 items-center gap-3 md:flex">
             <Button asChild variant="outline" className="rounded-2xl border-white/60 bg-white/80 shadow-sm">
-              <Link href="/articles">全部文章</Link>
+              <Link href="/articles">{t.allArticles}</Link>
             </Button>
+            <LanguageSwitcher locale={locale} />
           </div>
 
           <Sheet>
@@ -69,9 +74,10 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <SheetHeader>
-                <SheetTitle>文章分类</SheetTitle>
+                <SheetTitle>{t.articleCategories}</SheetTitle>
               </SheetHeader>
               <div className="mt-6 flex flex-col gap-3">
+                <LanguageSwitcher locale={locale} />
                 {navItems.map((item) => (
                   <Button key={item.label} asChild variant="outline" className="justify-start rounded-2xl">
                     <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
@@ -79,7 +85,7 @@ export function SiteHeader({ categories }: SiteHeaderProps) {
                 ))}
                 <Separator />
                 <Button asChild variant="ghost" className="justify-start rounded-2xl text-slate-500">
-                  <Link href="/articles">查看全部文章与筛选页</Link>
+                  <Link href="/articles">{t.browseAllArticles}</Link>
                 </Button>
               </div>
             </SheetContent>

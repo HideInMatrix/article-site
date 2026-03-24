@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { getUiText, translateCategory, type SiteLocale } from "@/lib/i18n";
 
 type FilterState = {
   q: string;
@@ -34,27 +35,35 @@ export function ArticleFilters({
   categories,
   tags,
   resultCount,
+  locale,
 }: {
   state: FilterState;
   categories: string[];
   tags: FilterTag[];
   resultCount: number;
+  locale: SiteLocale;
 }) {
   const hasActiveFilters = Boolean(state.q || state.category || state.tag);
+  const t = getUiText(locale);
 
   return (
     <div className="space-y-6">
       <div className="rounded-[1.75rem] border border-white/70 bg-white/88 p-5 shadow-lg shadow-slate-200/60 backdrop-blur">
         <form action="/articles" className="flex flex-col gap-3 lg:flex-row">
-          <Input name="q" defaultValue={state.q} placeholder="搜索标题、摘要、正文或作者……" className="h-11 rounded-2xl border-white/60 bg-white/90 shadow-sm" />
+          <Input
+            name="q"
+            defaultValue={state.q}
+            placeholder={locale === "zh-Hant" ? "搜尋標題、摘要、正文或作者……" : "Search titles, excerpts, content, or author..."}
+            className="h-11 rounded-2xl border-white/60 bg-white/90 shadow-sm"
+          />
           {state.category ? <input type="hidden" name="category" value={state.category} /> : null}
           {state.tag ? <input type="hidden" name="tag" value={state.tag} /> : null}
           <Button type="submit" className="h-11 rounded-2xl px-5 shadow-sm">
-            搜索文章
+            {t.searchArticles}
           </Button>
           {hasActiveFilters ? (
             <Button asChild type="button" variant="outline" className="h-11 rounded-2xl border-white/60 bg-white/80 px-5 shadow-sm">
-              <Link href="/articles">清空筛选</Link>
+              <Link href="/articles">{t.clearFilters}</Link>
             </Button>
           ) : null}
         </form>
@@ -64,16 +73,16 @@ export function ArticleFilters({
         <div className="rounded-[1.75rem] border border-white/70 bg-white/88 p-5 shadow-lg shadow-slate-200/60 backdrop-blur">
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-medium text-slate-500">分类筛选</div>
-              <div className="mt-1 text-lg font-semibold text-slate-950">按分类浏览</div>
+              <div className="text-sm font-medium text-slate-500">{t.categoryFilter}</div>
+              <div className="mt-1 text-lg font-semibold text-slate-950">{t.browseByCategory}</div>
             </div>
             <Badge variant="secondary" className="rounded-full px-3 py-1.5">
-              {resultCount} 篇结果
+              {resultCount} {t.resultsCount}
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild variant={state.category ? "outline" : "secondary"} className="rounded-full px-4">
-              <Link href={buildHref({ category: "" }, state)}>全部</Link>
+              <Link href={buildHref({ category: "" }, state)}>{t.allCategories}</Link>
             </Button>
             {categories.map((category) => (
               <Button
@@ -82,15 +91,15 @@ export function ArticleFilters({
                 variant={state.category === category ? "secondary" : "outline"}
                 className="rounded-full px-4"
               >
-                <Link href={buildHref({ category }, state)}>{category}</Link>
+                <Link href={buildHref({ category }, state)}>{translateCategory(category, locale)}</Link>
               </Button>
             ))}
           </div>
         </div>
 
         <div className="rounded-[1.75rem] border border-white/70 bg-white/88 p-5 shadow-lg shadow-slate-200/60 backdrop-blur">
-          <div className="text-sm font-medium text-slate-500">标签筛选</div>
-          <div className="mt-1 text-lg font-semibold text-slate-950">按标签聚合</div>
+          <div className="text-sm font-medium text-slate-500">{t.tagFilter}</div>
+          <div className="mt-1 text-lg font-semibold text-slate-950">{t.aggregateByTag}</div>
           <Separator className="my-4" />
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (

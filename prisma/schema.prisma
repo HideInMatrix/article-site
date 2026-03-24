@@ -10,8 +10,14 @@ model Article {
   id              String        @id @default(cuid())
   slug            String        @unique
   title           String
+  titleEn         String?
+  titleZhHant     String?
   excerpt         String
+  excerptEn       String?
+  excerptZhHant   String?
   content         String
+  contentEn       String?
+  contentZhHant   String?
   category        String
   authorName      String
   readTimeMinutes Int
