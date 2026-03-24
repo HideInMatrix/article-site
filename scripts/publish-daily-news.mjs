@@ -17,10 +17,7 @@ if ((!siteUrl || !token) && !dryRun) {
   process.exit(1);
 }
 
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  trimValues: true,
-});
+const parser = new XMLParser({ ignoreAttributes: false, trimValues: true });
 
 function toDateString(date = new Date()) {
   return new Intl.DateTimeFormat('en-CA', {
@@ -32,11 +29,7 @@ function toDateString(date = new Date()) {
 }
 
 function cleanText(value = '') {
-  return String(value)
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return String(value).replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function splitTitleAndSource(rawTitle = '', fallbackSource = '') {
@@ -87,7 +80,7 @@ function normalizeItem(item) {
   return {
     title: cleanTitle,
     link: String(link).trim(),
-    description: description.replace(/(新浪财经|新华社|央视新闻|Reuters|BBC|Financial Times|联合早报)\s*$/i, '').trim(),
+    description: description.replace(/(Reuters|BBC|Financial Times)\s*$/i, '').trim(),
     pubDate: new Date(item.pubDate || item.published || item.updated || Date.now()),
     source,
     sourceDomain: getDomain(String(link || '')),
@@ -132,40 +125,76 @@ async function collectNews(feeds, trustedSources, excludedKeywords) {
   return dedupeAndRank(items, trustedSources, excludedKeywords);
 }
 
-function buildHighlights(items) {
-  return items.slice(0, 3).map((item) => `- ${item.title}（${item.source}）`);
+function buildHighlights(items, locale) {
+  return items.slice(0, 3).map((item) =>
+    locale === 'zh-Hant' ? `- ${item.title}（${item.source}）` : `- ${item.title} (${item.source})`
+  );
 }
 
-function explainWhy(category) {
-  if (category === 'AI热点') {
-    return `这条新闻与人工智能产业、模型能力、产品落地或资本动向相关，适合作为当天 AI 趋势观察的重点参考。`;
+function explainWhy(category, locale) {
+  if (locale === 'zh-Hant') {
+    return category === 'AI热点'
+      ? '這條新聞與人工智慧產業、模型能力、產品落地或資本動向相關，適合作為當天 AI 趨勢觀察的重點。'
+      : '這條新聞與國際局勢、公共政策或重要社會事件相關，適合作為當天時政熱點觀察的重點。';
   }
-  return `这条新闻与国际局势、公共政策或重要社会事件相关，适合作为当天时政热点观察的重点参考。`;
+
+  return category === 'AI热点'
+    ? 'This development matters because it affects AI industry structure, model capability, product rollout, or capital expectations.'
+    : 'This development matters because it affects public policy, international affairs, or broader technology and business conditions.';
 }
 
-function makeArticle({ title, category, tags, intro, items, slug }) {
+function makeArticle({ titleEn, titleZhHant, category, tags, introEn, introZhHant, items, slug }) {
   const dateText = toDateString();
-  const highlights = buildHighlights(items);
-  const excerpt = `${intro} 今日精选 ${items.length} 条重点新闻，帮助你快速掌握当天最值得关注的动态。`;
-  const sections = items.map((item, index) => {
-    const summary = item.description ? `摘要：${item.description}` : '摘要：请打开原文查看完整内容。';
-    const why = `为什么值得关注：${explainWhy(category)}`;
-    return `### ${index + 1}. ${item.title}\n来源：${item.source}\n发布时间：${item.pubDate.toISOString()}\n原文链接：${item.link}\n${summary}\n${why}`;
+  const excerptEn = `${introEn} Today\'s edition highlights ${items.length} items worth tracking.`;
+  const excerptZhHant = `${introZhHant} 今日共整理 ${items.length} 條值得關注的新聞。`;
+  const sectionsEn = items.map((item, index) => {
+    const summary = item.description ? `Summary: ${item.description}` : 'Summary: please refer to the original source for full details.';
+    const why = `Why it matters: ${explainWhy(category, 'en')}`;
+    return `### ${index + 1}. ${item.title}\nSource: ${item.source}\nPublished: ${item.pubDate.toISOString()}\nOriginal link: ${item.link}\n${summary}\n${why}`;
+  });
+  const sectionsZhHant = items.map((item, index) => {
+    const summary = item.description ? `摘要：${item.description}` : '摘要：請參考原始來源了解完整內容。';
+    const why = `為什麼值得關注：${explainWhy(category, 'zh-Hant')}`;
+    return `### ${index + 1}. ${item.title}\n來源：${item.source}\n發布時間：${item.pubDate.toISOString()}\n原文連結：${item.link}\n${summary}\n${why}`;
   });
 
   return {
-    title: `${title}｜${dateText}`,
+    title: `${titleEn} | ${dateText}`,
+    titleEn: `${titleEn} | ${dateText}`,
+    titleZhHant: `${titleZhHant}｜${dateText}`,
     slug: `${slug}-${dateText}`,
-    excerpt,
+    excerpt: excerptEn,
+    excerptEn,
+    excerptZhHant,
     content: [
-      `${title}（${dateText}）`,
-      intro,
-      '## 今日重点',
-      ...highlights,
-      '## 重点新闻详情',
-      ...sections,
-      '## 编辑提示',
-      '以上内容基于公开新闻源自动聚合与清洗生成，适合作为日报初稿。正式发布前建议人工复核标题准确性、补充上下文，并对重点新闻做进一步整合与改写。',
+      `# ${titleEn} (${dateText})`,
+      introEn,
+      '## Key developments',
+      ...buildHighlights(items, 'en'),
+      '## Details',
+      ...sectionsEn,
+      '## Editorial note',
+      'This article is generated from public sources and should be reviewed before final publication if you need stricter editorial control.',
+    ].join('\n\n'),
+    contentEn: [
+      `# ${titleEn} (${dateText})`,
+      introEn,
+      '## Key developments',
+      ...buildHighlights(items, 'en'),
+      '## Details',
+      ...sectionsEn,
+      '## Editorial note',
+      'This article is generated from public sources and should be reviewed before final publication if you need stricter editorial control.',
+    ].join('\n\n'),
+    contentZhHant: [
+      `# ${titleZhHant}（${dateText}）`,
+      introZhHant,
+      '## 今日重點',
+      ...buildHighlights(items, 'zh-Hant'),
+      '## 重點新聞詳情',
+      ...sectionsZhHant,
+      '## 編輯提示',
+      '以上內容基於公開新聞源自動聚合與整理生成。若需要更嚴格的編輯品質，建議正式發布前再做人工作業校對。',
     ].join('\n\n'),
     category,
     authorName: 'Daily News Bot',
@@ -211,12 +240,14 @@ async function main() {
     tasks.push(
       publishArticle(
         makeArticle({
-          title: '每日 AI 新闻速览',
-          slug: 'daily-ai-briefing',
+          titleEn: 'Daily AI Briefing',
+          titleZhHant: '每日 AI 新聞速覽',
           category: 'AI热点',
-          tags: ['AI', 'AI新闻', '每日简报'],
-          intro: '这是一份面向中文读者的每日 AI 新闻速览，优先筛选过去 24 小时内更值得关注、信息质量更高的人工智能动态。',
+          tags: ['AI', 'AI news', 'daily briefing'],
+          introEn: 'This daily AI briefing highlights the most relevant and credible artificial intelligence developments from the last 24 hours.',
+          introZhHant: '這是一份面向繁體中文讀者的每日 AI 新聞速覽，優先整理過去 24 小時內最值得關注且可信度較高的人工智慧動態。',
           items: aiItems,
+          slug: 'daily-ai-briefing',
         })
       )
     );
@@ -226,12 +257,14 @@ async function main() {
     tasks.push(
       publishArticle(
         makeArticle({
-          title: '每日时政热点速览',
-          slug: 'daily-current-affairs-briefing',
+          titleEn: 'Daily Current Affairs Briefing',
+          titleZhHant: '每日時政熱點速覽',
           category: '时政热点',
-          tags: ['时政', '国际新闻', '热点新闻', '每日简报'],
-          intro: '这是一份面向中文读者的每日时政热点速览，优先筛选过去 24 小时内更值得关注、信息质量更高的重要国际与时政新闻。',
+          tags: ['current affairs', 'international news', 'daily briefing'],
+          introEn: 'This daily current affairs briefing tracks the highest-signal international and policy developments from the last 24 hours.',
+          introZhHant: '這是一份面向繁體中文讀者的每日時政熱點速覽，整理過去 24 小時內最值得關注的重要國際與政策動態。',
           items: currentAffairsItems,
+          slug: 'daily-current-affairs-briefing',
         })
       )
     );
