@@ -10,8 +10,10 @@ export function LanguageSwitcher({ locale }: { locale: SiteLocale }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeLocale, setActiveLocale] = useState<SiteLocale>(locale);
+  const [pendingLocale, setPendingLocale] = useState<SiteLocale | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const activeLocale = pendingLocale ?? locale;
 
   const currentUrl = useMemo(() => {
     const query = searchParams.toString();
@@ -25,7 +27,7 @@ export function LanguageSwitcher({ locale }: { locale: SiteLocale }) {
       return;
     }
 
-    setActiveLocale(nextLocale);
+    setPendingLocale(nextLocale);
 
     startTransition(async () => {
       await fetch(
