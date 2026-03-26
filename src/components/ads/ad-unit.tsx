@@ -46,7 +46,7 @@ export function AdUnit({ slot, className, label = "广告", minHeight = 140 }: A
       </div>
       <div className="px-4 py-4">
         <ins
-          className="adsbygoogle block w-full overflow-hidden"
+          className="adsbygoogle adsbygoogle-custom block w-full overflow-hidden"
           style={{ display: "block", minHeight }}
           data-ad-client={client}
           data-ad-slot={slot}
