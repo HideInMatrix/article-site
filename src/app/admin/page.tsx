@@ -98,9 +98,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <Button asChild variant="outline" className="rounded-2xl">
                     <Link href={`/admin/articles/${article.id}/edit`}>编辑</Link>
                   </Button>
-                  <form action={deleteArticleAction}>
+                  <form action={deleteArticleAction} className="w-full">
                     <input type="hidden" name="articleId" value={article.id} />
-                    <Button type="submit" variant="destructive" className="w-full rounded-2xl">
+                    <Button
+                      type="submit"
+                      className="w-full rounded-2xl bg-red-600 text-white hover:bg-red-700"
+                    >
                       删除
                     </Button>
                   </form>
