@@ -7,9 +7,10 @@ import { FadeIn } from "@/components/motion/fade-in";
 import { PaginationNav } from "@/components/pagination-nav";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getRequestLocale, getUiText } from "@/lib/i18n";
+import {  getUiText } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site";
+import { getRequestLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 

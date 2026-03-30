@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
+export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
 import { AdUnit } from "@/components/ads/ad-unit";
 import { ArticleCard } from "@/components/article-card";
 import { FadeIn } from "@/components/motion/fade-in";
 import { PaginationNav } from "@/components/pagination-nav";
 import { Card, CardContent } from "@/components/ui/card";
-import { getRequestLocale, getUiText } from "@/lib/i18n";
+import { getUiText } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
+import { getRequestLocale } from "@/lib/locale-server";
 
-export const dynamic = "force-dynamic";
+
 
 const feedAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_FEED || "";
 const PAGE_SIZE = 9;
