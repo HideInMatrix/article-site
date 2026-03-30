@@ -29,34 +29,46 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
     ...categories.map((category) => ({ label: translateCategory(category, locale), category })),
   ];
 
+  const desktopItems = navItems.slice(0, 6);
+  const hiddenCount = Math.max(0, navItems.length - desktopItems.length);
+
   return (
     <FadeIn>
       <header className="sticky top-0 z-30 border-b border-white/70 bg-white/75 backdrop-blur-xl supports-[backdrop-filter]:bg-white/65">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-10">
-          <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-300/30 ring-1 ring-white/30">
+          <Link href="/" className="min-w-0 shrink-0 flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-300/30 ring-1 ring-white/30">
               <BookOpenText className="h-5 w-5" />
             </div>
-            <div>
-              <div className="text-sm font-medium text-slate-500">{t.siteSubtitle}</div>
-              <div className="text-lg font-semibold tracking-tight text-slate-950">{locale === "zh-Hant" ? "每日AI與時政熱點" : "Daily AI & Current Affairs"}</div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-medium text-slate-500">{t.siteSubtitle}</div>
+              <div className="truncate text-lg font-semibold tracking-tight text-slate-950">
+                {locale === "zh-Hant" ? "每日AI與時政熱點" : "Daily AI & Current Affairs"}
+              </div>
             </div>
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-3 md:flex">
-            {navItems.map((item) => {
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex">
+            {desktopItems.map((item) => {
               const isActive = pathname === "/" && item.category === "";
               return (
                 <Button
                   key={item.label}
                   asChild
                   variant={isActive ? "default" : "ghost"}
-                  className="rounded-full px-4"
+                  className="max-w-[8.5rem] rounded-full px-4"
                 >
-                  <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                  <Link className="truncate" href={buildCategoryHref(item.category)} title={item.label}>
+                    {item.label}
+                  </Link>
                 </Button>
               );
             })}
+            {hiddenCount > 0 ? (
+              <Button asChild variant="outline" className="rounded-full px-4 text-slate-500">
+                <Link href="/articles">+{hiddenCount}</Link>
+              </Button>
+            ) : null}
           </nav>
 
           <div className="hidden shrink-0 items-center gap-3 md:flex">
