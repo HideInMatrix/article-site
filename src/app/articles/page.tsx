@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-
 import { AdUnit } from "@/components/ads/ad-unit";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleFilters } from "@/components/article-filters";
 import { FadeIn } from "@/components/motion/fade-in";
+import { PaginationNav } from "@/components/pagination-nav";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUiText } from "@/lib/i18n";
-import { getRequestLocale } from "@/lib/locale-server";
+import { getRequestLocale, getUiText } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 const feedAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_FEED || "";
+const PAGE_SIZE = 12;
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -40,6 +41,7 @@ type ArticlesPageProps = {
     q?: string;
     category?: string;
     tag?: string;
+    page?: string;
   }>;
 };
 
@@ -48,6 +50,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const q = params.q?.trim() ?? "";
   const category = params.category?.trim() ?? "";
   const tag = params.tag?.trim() ?? "";
+  const currentPage = Math.max(1, Number(params.page ?? "1") || 1);
   const t = getUiText(locale);
 
   const where = {
@@ -83,7 +86,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     ],
   };
 
-  const [articles, categoriesRaw, tags] = await Promise.all([
+  const [articles, totalCount, categoriesRaw, tags] = await Promise.all([
     prisma.article.findMany({
       where,
       include: {
@@ -101,7 +104,10 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
       orderBy: {
         publishedAt: "desc",
       },
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
+    prisma.article.count({ where }),
     prisma.article.findMany({
       select: {
         category: true,
@@ -125,6 +131,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     }),
   ]);
 
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const categories = categoriesRaw.map((item) => item.category);
 
   return (
@@ -144,7 +151,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           state={{ q, category, tag }}
           categories={categories}
           tags={tags.map((item) => ({ slug: item.slug, name: item.name, count: item._count.articles }))}
-          resultCount={articles.length}
+          resultCount={totalCount}
         />
       </FadeIn>
 
@@ -194,6 +201,14 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           })
         )}
       </section>
+
+      <PaginationNav
+        page={currentPage}
+        totalPages={totalPages}
+        basePath="/articles"
+        locale={locale}
+        query={{ q: q || undefined, category: category || undefined, tag: tag || undefined }}
+      />
     </main>
   );
 }

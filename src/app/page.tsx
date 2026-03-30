@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-
 import { AdUnit } from "@/components/ads/ad-unit";
 import { ArticleCard } from "@/components/article-card";
 import { FadeIn } from "@/components/motion/fade-in";
+import { PaginationNav } from "@/components/pagination-nav";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUiText } from "@/lib/i18n";
-import { getRequestLocale } from "@/lib/locale-server";
+import { getRequestLocale, getUiText } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, keywordText, siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 const feedAdSlot = process.env.NEXT_PUBLIC_GOOGLE_AD_SLOT_FEED || "";
+const PAGE_SIZE = 9;
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
@@ -38,32 +39,43 @@ export async function generateMetadata(): Promise<Metadata> {
 type HomePageProps = {
   searchParams: Promise<{
     category?: string;
+    page?: string;
   }>;
 };
 
 export default async function Home({ searchParams }: HomePageProps) {
-  const [{ category }, locale] = await Promise.all([searchParams, getRequestLocale()]);
+  const [{ category, page }, locale] = await Promise.all([searchParams, getRequestLocale()]);
   const activeCategory = category?.trim() ?? "";
+  const currentPage = Math.max(1, Number(page ?? "1") || 1);
   const t = getUiText(locale);
 
-  const articles = await prisma.article.findMany({
-    where: activeCategory ? { category: activeCategory } : undefined,
-    include: {
-      tags: {
-        include: {
-          tag: true,
+  const where = activeCategory ? { category: activeCategory } : undefined;
+
+  const [articles, totalCount] = await Promise.all([
+    prisma.article.findMany({
+      where,
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+          },
         },
       },
-      _count: {
-        select: {
-          likes: true,
-        },
+      orderBy: {
+        publishedAt: "desc",
       },
-    },
-    orderBy: {
-      publishedAt: "desc",
-    },
-  });
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.article.count({ where }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -137,6 +149,14 @@ export default async function Home({ searchParams }: HomePageProps) {
           })
         )}
       </section>
+
+      <PaginationNav
+        page={currentPage}
+        totalPages={totalPages}
+        basePath="/"
+        locale={locale}
+        query={{ category: activeCategory || undefined }}
+      />
     </main>
   );
 }
