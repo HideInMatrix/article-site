@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BookOpenText, ChevronDown, Menu } from "lucide-react";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -28,8 +28,11 @@ function buildCategoryHref(category: string) {
 
 export function SiteHeader({ categories, locale }: SiteHeaderProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const t = getUiText(locale);
   const moreLabel = locale === "zh-Hant" ? "更多" : "More";
+
+  const activeCategory = pathname === "/" ? (searchParams.get("category") ?? "") : null;
 
   const navItems = [
     { label: t.allCategories, category: "" },
@@ -38,6 +41,7 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
 
   const desktopItems = navItems.slice(0, 5);
   const overflowItems = navItems.slice(5);
+  const isOverflowActive = overflowItems.some((item) => item.category === activeCategory);
 
   return (
     <FadeIn>
@@ -57,7 +61,7 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex">
             {desktopItems.map((item) => {
-              const isActive = pathname === "/" && item.category === "";
+              const isActive = pathname === "/" && item.category === activeCategory;
               return (
                 <Button
                   key={item.label}
@@ -75,17 +79,24 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
             {overflowItems.length > 0 ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="rounded-full px-4 text-slate-600">
+                  <Button variant={isOverflowActive ? "default" : "outline"} className="rounded-full px-4 text-slate-600 data-[state=open]:text-inherit">
                     {moreLabel}
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-56 rounded-2xl p-2">
-                  {overflowItems.map((item) => (
-                    <DropdownMenuItem key={item.label} asChild className="rounded-xl px-3 py-2">
-                      <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {overflowItems.map((item) => {
+                    const isActive = pathname === "/" && item.category === activeCategory;
+                    return (
+                      <DropdownMenuItem
+                        key={item.label}
+                        asChild
+                        className={`rounded-xl px-3 py-2 ${isActive ? "bg-slate-100 font-medium text-slate-950" : ""}`}
+                      >
+                        <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : null}
@@ -110,11 +121,19 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
               </SheetHeader>
               <div className="mt-6 flex flex-col gap-3">
                 <LanguageSwitcher locale={locale} />
-                {navItems.map((item) => (
-                  <Button key={item.label} asChild variant="outline" className="justify-start rounded-2xl">
-                    <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
-                  </Button>
-                ))}
+                {navItems.map((item) => {
+                  const isActive = pathname === "/" && item.category === activeCategory;
+                  return (
+                    <Button
+                      key={item.label}
+                      asChild
+                      variant={isActive ? "default" : "outline"}
+                      className="justify-start rounded-2xl"
+                    >
+                      <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                    </Button>
+                  );
+                })}
                 <Separator />
                 <Button asChild variant="ghost" className="justify-start rounded-2xl text-slate-500">
                   <Link href="/articles">{t.browseAllArticles}</Link>
