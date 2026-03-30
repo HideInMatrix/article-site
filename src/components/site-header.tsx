@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenText, Menu } from "lucide-react";
+import { BookOpenText, ChevronDown, Menu } from "lucide-react";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { getUiText, translateCategory, type SiteLocale } from "@/lib/i18n";
@@ -23,14 +29,15 @@ function buildCategoryHref(category: string) {
 export function SiteHeader({ categories, locale }: SiteHeaderProps) {
   const pathname = usePathname();
   const t = getUiText(locale);
+  const moreLabel = locale === "zh-Hant" ? "更多" : "More";
 
   const navItems = [
     { label: t.allCategories, category: "" },
     ...categories.map((category) => ({ label: translateCategory(category, locale), category })),
   ];
 
-  const desktopItems = navItems.slice(0, 6);
-  const hiddenCount = Math.max(0, navItems.length - desktopItems.length);
+  const desktopItems = navItems.slice(0, 5);
+  const overflowItems = navItems.slice(5);
 
   return (
     <FadeIn>
@@ -64,10 +71,23 @@ export function SiteHeader({ categories, locale }: SiteHeaderProps) {
                 </Button>
               );
             })}
-            {hiddenCount > 0 ? (
-              <Button asChild variant="outline" className="rounded-full px-4 text-slate-500">
-                <Link href="/articles">+{hiddenCount}</Link>
-              </Button>
+
+            {overflowItems.length > 0 ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="rounded-full px-4 text-slate-600">
+                    {moreLabel}
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-56 rounded-2xl p-2">
+                  {overflowItems.map((item) => (
+                    <DropdownMenuItem key={item.label} asChild className="rounded-xl px-3 py-2">
+                      <Link href={buildCategoryHref(item.category)}>{item.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : null}
           </nav>
 
