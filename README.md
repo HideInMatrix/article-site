@@ -292,6 +292,13 @@ curl -X POST "https://micromatrix.org/api/internal/articles/purge" \
 
 自动任务最终也是通过内部 API 发文。
 
+新闻源目前通过环境变量配置，支持 **多个 RSS 用英文逗号分隔**，例如：
+
+```env
+AI_NEWS_FEEDS=https://news.google.com/rss/search?q=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD+OR+AI+when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans,https://aws.amazon.com/blogs/china/feed/
+CURRENT_AFFAIRS_FEEDS=https://news.google.com/rss/search?q=%E6%97%B6%E6%94%BF+OR+%E5%9B%BD%E9%99%85%E6%96%B0%E9%97%BB+when:1d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans
+```
+
 ---
 
 ## 9. Google Adsense
