@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -15,6 +16,19 @@ import {
   normalizeArticleInput,
   updateArticleRecord,
 } from "@/lib/article-admin";
+
+function toArticleErrorParam(error: unknown) {
+  if (error instanceof Error) {
+    if (error.message === "INVALID_ARTICLE_INPUT") return "incomplete";
+    if (error.message === "ARTICLE_NOT_FOUND") return "missing";
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    return "duplicate";
+  }
+
+  return "save";
+}
 
 export async function loginAction(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();
@@ -47,8 +61,8 @@ export async function createArticleAction(formData: FormData) {
     revalidatePath("/admin");
 
     redirect(`/admin?created=${article.slug}`);
-  } catch {
-    redirect("/admin/articles/new?error=1");
+  } catch (error) {
+    redirect(`/admin/articles/new?error=${toArticleErrorParam(error)}`);
   }
 }
 
@@ -57,7 +71,7 @@ export async function updateArticleAction(formData: FormData) {
 
   const articleId = String(formData.get("articleId") ?? "").trim();
   if (!articleId) {
-    redirect("/admin?error=1");
+    redirect("/admin?error=missing");
   }
 
   const articleInput = normalizeArticleInput(Object.fromEntries(formData.entries()));
@@ -73,8 +87,8 @@ export async function updateArticleAction(formData: FormData) {
     revalidatePath(`/admin/articles/${articleId}/edit`);
 
     redirect(`/admin?updated=${article.slug}`);
-  } catch {
-    redirect(`/admin/articles/${articleId}/edit?error=1`);
+  } catch (error) {
+    redirect(`/admin/articles/${articleId}/edit?error=${toArticleErrorParam(error)}`);
   }
 }
 

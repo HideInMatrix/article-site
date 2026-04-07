@@ -26,7 +26,11 @@ export default async function NewArticlePage({ searchParams }: NewArticlePagePro
         <CardContent>
           {error ? (
             <div className="mb-5 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              文章信息不完整，请补齐必填字段。
+              {error === "incomplete"
+                ? "文章信息不完整，请补齐必填字段。"
+                : error === "duplicate"
+                  ? "创建失败：slug 或其他唯一字段与现有文章冲突。"
+                  : "创建失败：不是单纯缺字段，可能是保存过程或唯一约束出了问题。"}
             </div>
           ) : null}
           <form action={createArticleAction} className="grid gap-5">

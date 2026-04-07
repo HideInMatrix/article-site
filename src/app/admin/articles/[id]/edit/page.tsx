@@ -56,7 +56,13 @@ export default async function EditArticlePage({ params, searchParams }: EditArti
         <CardContent>
           {error ? (
             <div className="mb-5 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              文章信息不完整，请补齐必填字段。
+              {error === "incomplete"
+                ? "文章信息不完整，请补齐必填字段。"
+                : error === "duplicate"
+                  ? "保存失败：slug 或其他唯一字段与现有文章冲突。"
+                  : error === "missing"
+                    ? "保存失败：未找到对应文章。"
+                    : "保存失败：内容已填写完整时，通常不是缺字段，而是后端保存过程出错了。请重试或检查 slug 是否重复。"}
             </div>
           ) : null}
           <form action={updateArticleAction} className="grid gap-5">

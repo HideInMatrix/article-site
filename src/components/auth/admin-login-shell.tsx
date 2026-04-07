@@ -69,7 +69,7 @@ export function AdminLoginShell({ error = false, siteName }: AdminLoginShellProp
               </p>
             </div>
 
-            <div className="mt-10 flex justify-center lg:mt-14 lg:justify-start">
+            <div className="mt-10 flex justify-center lg:mt-14">
               <AnimatedCharacters
                 isTyping={isTyping}
                 showPassword={showPassword}
