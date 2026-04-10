@@ -168,36 +168,36 @@ function buildLeadParagraph(category, items, locale) {
 
   if (locale === 'zh-Hant') {
     return category === 'AI热点'
-      ? `今天的 AI 新聞並不是零散更新，而是圍繞幾個清楚方向展開：${joined}。把它們放在一起看，更容易看出產業正在同時推進產品落地、模型能力與資本配置。`
-      : `今天的時政與國際新聞並不是彼此孤立的事件，而是共同指向更大的政策與地緣壓力：${joined}。把這些新聞串起來，才能看清真正的重要變化。`;
+      ? `乍看之下，今天的 AI 新聞像是幾條分散更新，但放在一起看，節奏其實很清楚：${joined}。這不只是產品上新而已，背後還連著模型能力落地、平台節奏和資本注意力的重新分配。`
+      : `今天的時政與國際新聞表面上各說各話，但串起來看，線索其實很集中：${joined}。真正值得看的，不只是單一事件，而是政策壓力、地緣風險和外部回應正在一起升高。`;
   }
 
   return category === 'AI热点'
-    ? `Today's AI cycle is not a pile of unrelated updates. ${joined} point to the same deeper pattern: product rollout, model deployment, and capital strategy are moving together.`
-    : `Today's current affairs cycle is not a list of isolated incidents. ${joined} point to a broader policy and geopolitical story that becomes clearer when the items are read together.`;
+    ? `At first glance, today's AI headlines look scattered. Read together, though, ${joined} tell a cleaner story: product rollout, model deployment, and capital positioning are starting to move in sync.`
+    : `At first glance, today's current affairs headlines can feel disconnected. Read together, ${joined} point to the same larger pressure line in policy and geopolitics.`;
 }
 
 function buildThesisParagraph(category, locale) {
   if (locale === 'zh-Hant') {
     return category === 'AI热点'
-      ? '這篇速覽不只是列新聞，而是把每條消息放回它真正所屬的產業脈絡：誰在搶位置、哪些能力開始實用化、哪些方向正在從概念變成基礎設施。'
-      : '這篇速覽不只是列事件，而是把每條消息放回政策、權力結構與外部影響的脈絡中，幫助讀者更快判斷它為什麼值得繼續追蹤。';
+      ? '這篇速覽想做的，不是把標題再排一次，而是把每條消息放回真正的產業脈絡裡：誰在搶位置、哪些能力開始變得實用、哪些方向已經從概念慢慢長成基礎設施。'
+      : '這篇速覽想做的，也不只是重述事件，而是把消息放回政策、權力結構與外部影響的脈絡中，讓讀者更快看懂它為什麼值得繼續追。';
   }
 
   return category === 'AI热点'
-    ? 'The goal of this briefing is not just to list headlines, but to place each one back into the larger industry structure: who is gaining leverage, which capabilities are becoming practical, and where the market is hardening into infrastructure.'
-    : 'The goal of this briefing is not just to list events, but to put each one back into its policy, power, and institutional context so the reader can see why it matters beyond the headline.';
+    ? 'This briefing is not trying to restate the headlines. It is trying to put each item back into the bigger industry picture: who is gaining leverage, which capabilities are becoming usable, and where the market is hardening into infrastructure.'
+    : 'This briefing is not just a recap of events. It aims to put each development back into its policy, power, and institutional context so the reader can see why it matters beyond the headline.';
 }
 
 function buildWhatHappenedParagraph(item, locale) {
   const fallback = locale === 'zh-Hant'
-    ? '目前公開資訊仍以標題與摘要為主，後續細節仍需持續跟進原始來源。'
-    : 'Public reporting is still relatively early, so the headline and summary remain the clearest window into the story so far.';
+    ? '目前公開資訊還不算多，眼下能先抓住的，主要還是標題、摘要和原始來源釋出的線索。'
+    : 'Public reporting is still early, so for now the clearest view of the story is still the headline, the summary, and the original source material.';
 
   if (item.description) {
     return locale === 'zh-Hant'
-      ? `${sentenceCase(item.description)} 目前最值得先把握的，是這條消息已經明確進入公開討論，且來自 ${item.source} 的報導可作為第一手追蹤入口。`
-      : `${sentenceCase(item.description)} The most important immediate takeaway is that the story has now entered the public reporting cycle, with ${item.source} serving as the first source to monitor closely.`;
+      ? `${sentenceCase(item.description)} 先抓住一點就好：這件事已經正式進入公開報導，${item.source} 也是眼下最值得持續盯著看的來源。`
+      : `${sentenceCase(item.description)} The immediate takeaway is fairly simple: this story is now firmly in the public reporting cycle, and ${item.source} is the source worth watching most closely for follow-through.`;
   }
 
   return fallback;
@@ -206,13 +206,13 @@ function buildWhatHappenedParagraph(item, locale) {
 function explainWhy(category, locale, item) {
   if (locale === 'zh-Hant') {
     return category === 'AI热点'
-      ? `這條消息之所以值得看，不只因為事件本身，而是因為它反映了 AI 產業正在如何重新分配產品優勢、模型能力或資本注意力。${item.source === 'aws.amazon.com' ? ' 由官方技術部落格釋出的內容，也往往代表平台方想主動塑造的技術方向。' : ''}`
-      : '這條消息之所以值得看，不只因為事件本身，而是因為它可能影響後續政策討論、跨國互動或市場預期。';
+      ? `這條消息值得看，不只是因為它本身夠新，而是因為它讓人更清楚看到 AI 產業接下來怎麼分配產品優勢、模型能力和資本注意力。${item.source === 'aws.amazon.com' ? ' 如果訊號直接來自官方技術部落格，通常也代表平台方正在主動帶節奏。' : ''}`
+      : '這條消息值得看，也不只因為事件本身，而是因為它很可能會牽動後續政策討論、跨國互動，甚至市場對風險的判斷。';
   }
 
   return category === 'AI热点'
-    ? `This matters not only because of the event itself, but because it shows how AI product advantage, model capability, or capital attention is being redistributed.${item.sourceDomain === 'aws.amazon.com' ? ' When the signal comes from an official platform blog, it also hints at what the platform wants developers to build next.' : ''}`
-    : 'This matters not only because of the event itself, but because it can change the direction of policy discussion, international coordination, or market expectations.';
+    ? `This matters not just because it is new, but because it gives a clearer view of how AI product advantage, model capability, and capital attention are being redistributed.${item.sourceDomain === 'aws.amazon.com' ? ' When the signal comes from an official platform blog, it usually means the platform is trying to shape the next wave of builder behavior.' : ''}`
+    : 'This matters not just because of the event itself, but because it can push the next round of policy discussion, international coordination, and market judgment.';
 }
 
 function buildWatchNextParagraph(category, locale, item, index, total) {
@@ -221,24 +221,24 @@ function buildWatchNextParagraph(category, locale, item, index, total) {
   if (locale === 'zh-Hant') {
     if (category === 'AI热点') {
       return isLast
-        ? '接下來要觀察的，不只是這條消息本身會不會擴大，而是它是否會與其他產品更新、平台策略或資本動作形成連鎖反應。'
-        : '接下來值得觀察的是，這條消息會不會很快引出更具體的產品、商業化或生態層面後續。';
+        ? '接下來真正要看的，不只是這條消息會不會繼續發酵，而是它會不會和其他產品更新、平台策略或資本動作接在一起，變成更大的轉向。'
+        : '接下來值得盯的是，這條消息會不會很快落到更具體的產品、商業化或生態合作上。';
     }
 
     return isLast
-      ? '接下來更值得留意的是，這些事件會不會在政策層面彼此疊加，進一步改變外部判斷與行動。'
-      : '接下來值得留意的是，這條消息會不會很快在政策、輿論或市場層面產生第二波影響。';
+      ? '接下來更值得留意的，是這些事件會不會在政策層面彼此疊加，最後把外部判斷和行動一起往前推。'
+      : '接下來值得留意的，是這條消息會不會很快在政策、輿論或市場層面引出第二波反應。';
   }
 
   if (category === 'AI热点') {
     return isLast
-      ? 'The next question is not just whether this story grows, but whether it links up with adjacent product, platform, or capital moves and becomes part of a broader shift.'
-      : 'What to watch next is whether this quickly turns into a more concrete product, business, or ecosystem-level follow-up.';
+      ? 'The real next question is not just whether this story gets bigger, but whether it connects with adjacent product, platform, or capital moves and turns into a broader shift.'
+      : 'What to watch next is whether this quickly turns into something more concrete at the product, commercial, or ecosystem level.';
   }
 
   return isLast
-    ? 'The next question is whether these developments begin to compound at the policy level and reshape external expectations.'
-    : 'What to watch next is whether this story produces a second-order effect in policy, public debate, or market behavior.';
+    ? 'The next thing to watch is whether these developments begin to stack on top of one another at the policy level and push outside expectations in a new direction.'
+    : 'What to watch next is whether this produces a second wave of reaction in policy, public debate, or market behavior.';
 }
 
 function buildItemSection(item, index, total, category, locale) {
@@ -264,13 +264,13 @@ function buildConclusion(category, locale, items) {
 
   if (locale === 'zh-Hant') {
     return category === 'AI热点'
-      ? `如果今天只能記住一件事，那就是 AI 新聞的重點已經不只是單點發布，而是像「${lead}」這樣的訊號正在共同塑造下一步的產品節奏、競爭格局與生態分工。`
-      : `如果今天只能記住一件事，那就是真正重要的不是單條事件本身，而是它們如何彼此疊加，慢慢改變政策方向與外部風險判斷。`;
+      ? `如果今天只記一件事，那大概就是：AI 新聞真正的訊號，早就不只是一條 headline。像「${lead}」這樣的消息，正在一起改寫下一步的產品節奏、競爭格局和生態分工。`
+      : `如果今天只記一件事，那就是：真正重要的，往往不是單條事件本身，而是它們怎麼彼此疊加，慢慢把政策方向和風險判斷往前推。`;
   }
 
   return category === 'AI热点'
-    ? `If there is one takeaway from today's AI cycle, it is that the important signal is no longer a single headline. Stories like "${lead}" are part of a broader shift in product tempo, competitive leverage, and ecosystem structure.`
-    : 'If there is one takeaway from today’s current affairs cycle, it is that the real signal lies less in any single event than in how multiple developments begin to reinforce one another.';
+    ? `If there is one takeaway from today's AI cycle, it is this: the real signal no longer lives in a single headline. Stories like "${lead}" are moving together and reshaping product tempo, competitive leverage, and ecosystem structure.`
+    : 'If there is one takeaway from today’s current affairs cycle, it is this: the real signal sits less in any single event than in how multiple developments begin to reinforce one another.';
 }
 
 function buildSources(items, locale) {
